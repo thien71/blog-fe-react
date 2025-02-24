@@ -1,44 +1,49 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PostInfo } from "../../../../components";
 import PostAPI from "../../../../apis/endpoints/posts";
+import { useNavigate } from "react-router-dom";
 
 const FeaturedPost = () => {
   const [post, setPost] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLatestPost = async () => {
+    (async () => {
       try {
         const response = await PostAPI.getLatest();
-        console.log("📌 API Response:", response.data);
-
-        if (response.data.data && response.data.data.length > 0) {
+        if (response.data.data?.length) {
           setPost(response.data.data[0]);
         }
       } catch (error) {
-        console.error("❌ Lỗi khi tải bài viết mới nhất:", error);
+        console.error("Lỗi khi tải bài viết mới nhất:", error);
       }
-    };
-
-    fetchLatestPost();
+    })();
   }, []);
 
-  useEffect(() => {
-    console.log("📌 Dữ liệu bài viết đã cập nhật:", post);
-  }, [post]);
+  const handleOnclick = useCallback(
+    (post) => {
+      if (post) {
+        navigate(`/posts/${post.slug}`);
+      }
+    },
+    [navigate]
+  );
 
   return (
-    <article className="flex gap-6">
-      <img
-        src={post?.thumbnail || "https://placehold.co/500x300"}
-        alt={post?.title || "Featured"}
-        className="max-w-lg max-h-80 block object-cover aspect-[5/3] w-[500px] h-[300px] rounded-lg"
-      />
+    <article
+      className="flex gap-6 cursor-pointer"
+      onClick={post ? handleOnclick : undefined}
+    >
       {post ? (
-        <PostInfo
-          title={post.title}
-          summary={post.summary || "Không có mô tả"}
-          isUppercase
-        />
+        <>
+          <img
+            title={post.title}
+            src={post.thumbnail}
+            alt={post.title}
+            className="max-w-lg max-h-80 block object-cover aspect-[5/3] w-[500px] h-[300px]"
+          />
+          <PostInfo title={post.title} summary={post.content || ""} />
+        </>
       ) : (
         <p>Đang tải bài viết nổi bật...</p>
       )}

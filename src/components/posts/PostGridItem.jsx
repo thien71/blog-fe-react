@@ -11,15 +11,17 @@ const PostGridItem = ({
   imgRatio = "w-1/4",
   className,
   isUppercase = false,
+  clampLines,
 }) => {
   return (
-    <article className={`flex gap-4 justify-between items-start ${className}`}>
+    <article className={`flex gap-2 justify-start items-start ${className}`}>
       {image && (
         <div className={`${imgRatio} rounded-md`}>
           <img
+            title={title}
             src={image}
             alt="Post Thumbnail"
-            className="w-auto h-auto object-cover aspect-[5/3]"
+            className="w-full max-w-sm max-h-36 object-cover aspect-[5/3]"
           />
         </div>
       )}
@@ -32,6 +34,7 @@ const PostGridItem = ({
         summarySize={summarySize}
         isUppercase={isUppercase}
         className={"w-1/2"}
+        clampLines={clampLines}
       />
     </article>
   );

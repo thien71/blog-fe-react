@@ -8,6 +8,7 @@ export default {
         title: "#222222",
         summary: "#4f4f4f",
         views: "#076DB6",
+        hover: "#087cce",
       },
       fontFamily: {
         title: ["Merriweather", "serif"],

@@ -7,10 +7,18 @@ const PostAPI = {
   update: (id, postData) => api.put(`/posts/${id}`, postData),
   delete: (id) => api.delete(`/posts/${id}`),
   getByAuthor: (authorId) => api.get(`/posts/author/${authorId}`),
-  getLatest: () => api.get("/posts/latest"),
-  getPopular: () => api.get("/posts/popular"),
-  getRandom: () => api.get("/posts/random"),
-  getRandomByCategory: () => api.get("/posts/random-by-category"),
+  getLatest: (limit) =>
+    api.get(limit ? `/posts/latest?limit=${limit}` : "/posts/latest"),
+  getPopular: (limit) =>
+    api.get(limit ? `/posts/popular?limit=${limit}` : "/posts/popular"),
+  getRandom: (limit) =>
+    api.get(limit ? `/posts/random?limit=${limit}` : "/posts/random"),
+  getRandomByCategory: (limit) =>
+    api.get(
+      limit
+        ? `/posts/random-by-category?limit=${limit}`
+        : "/posts/random-by-category"
+    ),
 };
 
 export default PostAPI;

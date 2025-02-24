@@ -4,7 +4,7 @@ import TopViewedPosts from "./TopViewedPosts";
 
 const Section1 = () => {
   return (
-    <section className="w-2/3">
+    <section className="w-4/5">
       <FeaturedPost />
       <Divider />
       <TopViewedPosts />
