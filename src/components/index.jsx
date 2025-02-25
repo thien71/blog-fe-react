@@ -6,9 +6,8 @@ export { default as Sidebar } from "./sidebar/Sidebar";
 export { default as Button } from "./button/Button";
 export { default as TextField } from "./text_field/TextField";
 
-export { default as PostInfo } from "./posts/PostInfo";
-export { default as PostListItem } from "./posts/PostListItem";
-export { default as PostGridItem } from "./posts/PostGridItem";
+export { default as PostItem } from "./posts/PostItem";
+export { default as PostsList } from "./posts/PostsList";
 
 export { default as Divider } from "./shared/Divider";
 export { default as SocialLinks } from "./shared/SocialLinks";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PostAPI from "../../../../apis/endpoints/posts";
 import { Link } from "react-router-dom";
 import { Divider } from "../../../../components";
-import PostItem from "../../../../components/posts/PostItem";
+import { PostItem } from "../../../../components/index";
 
 import { GoDotFill } from "react-icons/go";
 

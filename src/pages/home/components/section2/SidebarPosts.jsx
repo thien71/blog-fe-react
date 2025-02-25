@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
 import { useNavigate } from "react-router-dom";
 import { Divider } from "../../../../components";
-import PostItem from "../../../../components/posts/PostItem";
+import { PostItem } from "../../../../components/index";
 
 const SidebarPosts = () => {
   const [posts, setPosts] = useState([]);

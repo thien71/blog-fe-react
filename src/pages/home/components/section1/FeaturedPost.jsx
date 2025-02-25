@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
-import PostItem from "../../../../components/posts/PostItem";
+import { PostItem } from "../../../../components/index";
 
 const FeaturedPost = () => {
   const [post, setPost] = useState(null);

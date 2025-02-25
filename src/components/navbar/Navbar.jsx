@@ -16,11 +16,7 @@ const Navbar = () => {
       <ul className="flex items-center space-x-6">
         {menuItems.map((item, index) => (
           <li className="">
-            <Link
-              key={index}
-              to={item.path}
-              className="text-gray-600 hover:text-blue-500"
-            >
+            <Link key={index} to={item.path} className="text-title">
               {item.name}
             </Link>
           </li>
