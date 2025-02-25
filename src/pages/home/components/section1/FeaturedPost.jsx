@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { PostInfo } from "../../../../components";
+import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
-import { useNavigate } from "react-router-dom";
+import PostItem from "../../../../components/posts/PostItem";
 
 const FeaturedPost = () => {
   const [post, setPost] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -15,35 +13,22 @@ const FeaturedPost = () => {
           setPost(response.data.data[0]);
         }
       } catch (error) {
-        console.error("Lỗi khi tải bài viết mới nhất:", error);
+        console.error("Lỗi khi tải bài viết nổi bật:", error);
       }
     })();
   }, []);
 
-  const handleOnclick = useCallback(
-    (post) => {
-      if (post) {
-        navigate(`/posts/${post.slug}`);
-      }
-    },
-    [navigate]
-  );
-
   return (
-    <article
-      className="flex gap-6 cursor-pointer"
-      onClick={post ? handleOnclick : undefined}
-    >
+    <article className="cursor-pointer text-xl">
       {post ? (
-        <>
-          <img
-            title={post.title}
-            src={post.thumbnail}
-            alt={post.title}
-            className="max-w-lg max-h-80 block object-cover aspect-[5/3] w-[500px] h-[300px]"
-          />
-          <PostInfo title={post.title} summary={post.content || ""} />
-        </>
+        <PostItem
+          post={post}
+          layout="image-left-summary"
+          imageRatio="aspect-[5/3]"
+          imageWidth="66%"
+          titleClass="text-xl mb-4 leading-normal line-clamp-none"
+          summaryClass="text-base"
+        />
       ) : (
         <p>Đang tải bài viết nổi bật...</p>
       )}

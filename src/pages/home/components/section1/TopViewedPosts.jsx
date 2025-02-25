@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
-import { useNavigate } from "react-router-dom";
+import PostItem from "../../../../components/posts/PostItem";
 
 const TopViewedPosts = () => {
   const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -14,41 +13,23 @@ const TopViewedPosts = () => {
           setPosts(response.data.data);
         }
       } catch (error) {
-        console.error("Lỗi khi tải bài viết mới nhất:", error);
+        console.error("Lỗi khi tải bài viết phổ biến:", error);
       }
     })();
   }, []);
 
-  const handleOnclick = useCallback(
-    (post) => {
-      if (post) {
-        navigate(`/posts/${post.slug}`);
-      }
-    },
-    [navigate]
-  );
-
   return (
     <div className="grid grid-cols-3 gap-4">
       {posts.map((post) => (
-        <article
+        <PostItem
           key={post.id}
-          className="flex justify-between flex-col gap-2 cursor-pointer"
-          onClick={() => handleOnclick(post)}
-        >
-          <h3
-            className="text-title text-base font-bold font-title text-left line-clamp-2"
-            title={post.title}
-          >
-            {post.title}
-          </h3>
-          <img
-            title={post.title}
-            src={post.thumbnail || "https://placehold.co/250x150"}
-            alt={post.title}
-            className="object-cover w-full max-w-xs max-h-40 block aspect-[5/3]"
-          />
-        </article>
+          post={post}
+          layout="image-title"
+          imageRatio="aspect-[5/3]"
+          imagePosition="bottom"
+          imageWidth="100%"
+          titleClass="text-base font-bold min-h-[60px]"
+        />
       ))}
     </div>
   );
