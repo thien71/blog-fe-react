@@ -1,15 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import PostAPI from "../../../../apis/endpoints/posts";
-import { Link } from "react-router-dom";
 import { Divider } from "../../../../components";
 import { PostItem } from "../../../../components/index";
 
 import { GoDotFill } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const CategoryPosts = () => {
   const [categories, setCategories] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -40,23 +39,31 @@ const CategoryPosts = () => {
           {category.posts.length > 0 ? (
             <div className="flex gap-4 flex-col">
               <div className="flex gap-4">
-                <PostItem
-                  post={category.posts[0]}
-                  layout="image-left-summary"
-                  imageWidth="50%"
-                  titleClass="text-[15px] mb-2"
-                  summaryClass="text-sm"
-                  className="w-2/3"
-                />
-
-                {category.posts[1] && (
+                <Link
+                  className="block w-2/3"
+                  to={`/posts/${category.posts[0].slug}`}
+                >
                   <PostItem
-                    post={category.posts[1]}
-                    layout="title-summary"
+                    post={category.posts[0]}
+                    layout="image-left-summary"
+                    imageWidth="50%"
                     titleClass="text-[15px] mb-2"
                     summaryClass="text-sm"
-                    className="w-1/3"
                   />
+                </Link>
+
+                {category.posts[1] && (
+                  <Link
+                    className="block w-1/3"
+                    to={`/posts/${category.posts[1].slug}`}
+                  >
+                    <PostItem
+                      post={category.posts[1]}
+                      layout="title-summary"
+                      titleClass="text-[15px] mb-2"
+                      summaryClass="text-sm"
+                    />
+                  </Link>
                 )}
               </div>
 
@@ -65,11 +72,13 @@ const CategoryPosts = () => {
                 {category.posts.slice(2, 5).map((post) => (
                   <div key={post.id} className="flex items-center gap-1 flex-1">
                     <GoDotFill color="#ababab" className="w-3 h-3 shrink-0" />
-                    <PostItem
-                      post={post}
-                      layout="title-only"
-                      titleClass="text-sm font-semibold text-left cursor-pointer hover:text-hover block flex-1 line-clamp-3"
-                    />
+                    <Link to={`/posts/${post.slug}`}>
+                      <PostItem
+                        post={post}
+                        layout="title-only"
+                        titleClass="text-sm font-semibold text-left cursor-pointer hover:text-hover block flex-1 line-clamp-3"
+                      />
+                    </Link>
                   </div>
                 ))}
               </div>

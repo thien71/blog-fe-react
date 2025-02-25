@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 
 const PostItem = ({
@@ -11,8 +10,6 @@ const PostItem = ({
   summaryClass = "",
   className = "",
 }) => {
-  const navigate = useNavigate();
-
   const defaultTitleClass =
     "font-title text-base text-title font-bold line-clamp-3 leading-tight";
   const defaultSummaryClass = "font-summary text-sm text-summary line-clamp-4";
@@ -35,7 +32,7 @@ const PostItem = ({
   return (
     <div
       className={`${className} cursor-pointer flex items-start gap-3`}
-      onClick={() => navigate(`/posts/${post.slug}`)}
+      // onClick={() => navigate(`/posts/${post.slug}`)}
     >
       {layout === "image-left-summary" && (
         <div className="flex w-full gap-3">

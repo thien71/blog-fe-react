@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PostAPI from "../../apis/endpoints/posts";
 import { PostItem } from "../../components/index";
 import { Divider } from "../index";
+import { Link } from "react-router-dom";
 
 const PostsSidebar = () => {
   const [posts, setPosts] = useState([]);
@@ -27,14 +28,16 @@ const PostsSidebar = () => {
           {posts.length > 0 ? (
             posts.map((post) => (
               <div>
-                <PostItem
-                  key={post.id}
-                  post={post}
-                  layout="image-title"
-                  imagePosition="left"
-                  titleClass="text-sm font-normal line-clamp-4"
-                />
-                <Divider spacing="my-2" />
+                <Link to={`/posts/${post.slug}`}>
+                  <PostItem
+                    key={post.id}
+                    post={post}
+                    layout="image-title"
+                    imagePosition="left"
+                    titleClass="text-sm font-normal line-clamp-4"
+                  />
+                  <Divider spacing="my-2" />
+                </Link>
               </div>
             ))
           ) : (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
 import { PostItem } from "../../../../components/index";
+import { Link } from "react-router-dom";
 
 const TopViewedPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -21,15 +22,17 @@ const TopViewedPosts = () => {
   return (
     <div className="grid grid-cols-3 gap-4">
       {posts.map((post) => (
-        <PostItem
-          key={post.id}
-          post={post}
-          layout="image-title"
-          imageRatio="aspect-[5/3]"
-          imagePosition="bottom"
-          imageWidth="100%"
-          titleClass="text-base font-bold min-h-[60px]"
-        />
+        <Link to={`/posts/${post.slug}`}>
+          <PostItem
+            key={post.id}
+            post={post}
+            layout="image-title"
+            imageRatio="aspect-[5/3]"
+            imagePosition="bottom"
+            imageWidth="100%"
+            titleClass="text-base font-bold min-h-[60px]"
+          />
+        </Link>
       ))}
     </div>
   );

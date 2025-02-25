@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
 import { PostItem } from "../../../../components/index";
+import { Link } from "react-router-dom";
 
 const FeaturedPost = () => {
   const [post, setPost] = useState(null);
@@ -21,14 +22,16 @@ const FeaturedPost = () => {
   return (
     <article className="cursor-pointer text-xl">
       {post ? (
-        <PostItem
-          post={post}
-          layout="image-left-summary"
-          imageRatio="aspect-[5/3]"
-          imageWidth="66%"
-          titleClass="text-xl mb-4 leading-normal line-clamp-none"
-          summaryClass="text-base"
-        />
+        <Link to={`/posts/${post.slug}`}>
+          <PostItem
+            post={post}
+            layout="image-left-summary"
+            imageRatio="aspect-[5/3]"
+            imageWidth="66%"
+            titleClass="text-xl mb-4 leading-normal line-clamp-none"
+            summaryClass="text-base"
+          />
+        </Link>
       ) : (
         <p>Đang tải bài viết nổi bật...</p>
       )}

@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Divider } from "../../../../components";
 import { PostItem } from "../../../../components/index";
 
 const SidebarPosts = () => {
   const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -21,28 +20,17 @@ const SidebarPosts = () => {
     })();
   }, []);
 
-  const handleOnclick = useCallback(
-    (post) => {
-      if (post) {
-        navigate(`/posts/${post.slug}`);
-      }
-    },
-    [navigate]
-  );
-
   return (
     <aside className="w-2/5 max-w-md">
       {posts.map((post) => (
-        <div
-          key={post.id}
-          className="cursor-pointer"
-          onClick={() => handleOnclick(post)}
-        >
-          <PostItem
-            post={post}
-            layout="title-image-summary"
-            imageRatio="aspect-[5/3]"
-          />
+        <div key={post.id} className="cursor-pointer">
+          <Link to={`/posts/${post.slug}`}>
+            <PostItem
+              post={post}
+              layout="title-image-summary"
+              imageRatio="aspect-[5/3]"
+            />
+          </Link>
           <Divider spacing="my-2" />
         </div>
       ))}
