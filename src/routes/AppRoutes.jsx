@@ -1,17 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
-// import AuthRoutes from "./auth";
+import AuthRoutes from "./auth";
 import HomeRoutes from "./home";
 import PostRoutes from "./post";
+import AdminRoutes from "./admin";
+import AuthorRoutes from "./author";
 import NotFound from "../pages/errors/NotFound";
-// import AdminRoutes from "./admin";
-// import AuthorRoutes from "./author";
 
 const AppRoutes = createBrowserRouter([
-  // ...AuthRoutes,
+  ...AuthRoutes,
   ...HomeRoutes,
   ...PostRoutes,
-  // ...AdminRoutes,
-  // ...AuthorRoutes,
+  ...AdminRoutes,
+  ...AuthorRoutes,
   {
     path: "*",
     element: <NotFound />,

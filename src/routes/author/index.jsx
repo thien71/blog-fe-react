@@ -1,14 +1,21 @@
-import AuthorLayout from "layouts/AuthorLayout";
-import AuthorDashboard from "pages/author/Dashboard";
-import CreatePost from "pages/author/CreatePost";
+import { ProtectedRoute } from "../../components";
+import AuthorLayout from "../../layouts/AuthorLayout";
+import AuthorDashboard from "../../pages/author/AuthorDashboard";
+// import CreatePost from "pages/author/CreatePost";
 
 const AuthorRoutes = [
   {
     path: "/author",
-    element: <AuthorLayout />,
+    element: <ProtectedRoute allowedRoles={["author"]} />,
     children: [
-      { path: "dashboard", element: <AuthorDashboard /> },
-      { path: "posts/create", element: <CreatePost /> },
+      {
+        path: "",
+        element: <AuthorLayout />,
+        children: [
+          { path: "dashboard", element: <AuthorDashboard /> },
+          // { path: "posts/create", element: <CreatePost /> },
+        ],
+      },
     ],
   },
 ];

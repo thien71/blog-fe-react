@@ -1,7 +1,11 @@
+export { default as ProtectedRoute } from "./guard/ProtectedRoute";
+
 export { default as Header } from "./header/Header";
+export { default as DashboardHeader } from "./header/DashboardHeader";
 export { default as Footer } from "./footer/Footer";
 export { default as Navbar } from "./navbar/Navbar";
 export { default as Sidebar } from "./sidebar/Sidebar";
+export { default as DashboardSidebar } from "./sidebar/DashboardSidebar";
 
 export { default as Button } from "./button/Button";
 export { default as TextField } from "./text_field/TextField";

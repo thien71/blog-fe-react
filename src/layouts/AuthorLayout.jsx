@@ -1,5 +1,5 @@
 const AuthorLayout = () => {
-  return <></>;
+  return <>Layout</>;
 };
 
 export default AuthorLayout;
