@@ -4,13 +4,13 @@ const DashboardSidebar = ({ menuItems }) => {
   const location = useLocation();
 
   return (
-    <aside className="w-64 bg-white border-r h-screen p-4">
+    <aside className="w-64 bg-white border-r h-screen p-4 fixed top-14 left-0">
       <nav>
         {menuItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`block p-2 rounded-md ${
+            className={`block py-2 rounded-md text-title font-summary${
               location.pathname === item.path ? "bg-gray-200" : ""
             }`}
           >

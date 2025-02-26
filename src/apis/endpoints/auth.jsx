@@ -1,10 +1,7 @@
 import api from "../index";
 
 const AuthAPI = {
-  login: (credentials) =>
-    api.post("/login", JSON.stringify(credentials), {
-      headers: { "Content-Type": "application/json" },
-    }),
+  login: (credentials) => api.post("/login", credentials),
   logout: () => api.post("/logout"),
 };
 

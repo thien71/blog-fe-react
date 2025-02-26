@@ -7,10 +7,15 @@ const adminMenu = [
   { path: "/admin/posts", label: "Quản lí bài viết" },
   { path: "/admin/users", label: "Quản lí tài khoản" },
   { path: "/admin/categories", label: "Quản lí danh mục" },
-  { path: "/admin/tags", label: "Quản lí tag" },
+  { path: "/admin/tags", label: "Quản lí các tag" },
 ];
 
-const AdminLayout = () => {
+const authorMenu = [
+  { path: "/author/posts", label: "Quản lí bài viết" },
+  { path: "/author/tags", label: "Quản lí các tag" },
+];
+
+const DashboardLayout = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -28,13 +33,18 @@ const AdminLayout = () => {
   }, []);
 
   if (!user) return <p>Loading...</p>;
+  {
+    console.log("Usser", user.role);
+  }
 
   return (
-    <div className="flex h-screen">
-      <DashboardSidebar menuItems={adminMenu} />
-      <div className="flex-1 flex flex-col">
-        <DashboardHeader user={user} />
-        <main className="flex-1 p-4 overflow-auto bg-gray-100">
+    <div className="flex flex-col h-screen">
+      <DashboardHeader user={user} />
+      <div className="flex-1 flex pt-14">
+        <DashboardSidebar
+          menuItems={user.role === "admin" ? adminMenu : authorMenu}
+        />
+        <main className="flex-1 p-3 overflow-auto bg-gray-100 ml-64">
           <Outlet />
         </main>
       </div>
@@ -42,4 +52,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default DashboardLayout;

@@ -1,14 +1,25 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthAPI from "../../apis/endpoints/auth";
 
 const DashboardHeader = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await AuthAPI.logout();
+      localStorage.removeItem("authToken");
+      navigate("/login");
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error.response?.data || error);
+    }
+  };
 
   return (
-    <header className="flex justify-between items-center p-4 border-b bg-white">
-      {/* Logo */}
+    <header className="flex justify-between items-center py-3 px-4 border-b bg-white fixed top-0 w-full z-10">
       <div className="text-title font-bold">LOGO</div>
 
-      {/* Avatar + Role */}
       <div className="relative">
         <button
           className="flex items-center space-x-2"
@@ -19,10 +30,9 @@ const DashboardHeader = ({ user }) => {
             alt="avatar"
             className="w-8 h-8 rounded-full"
           />
-          <span className="text-sm font-summary">{user.role}</span>
+          <span className="text-sm font-summary">{user.name}</span>
         </button>
 
-        {/* Dropdown */}
         {isOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white border shadow-md rounded-lg">
             <div className="p-4 text-center">
@@ -35,10 +45,13 @@ const DashboardHeader = ({ user }) => {
               <p className="text-xs text-gray-500">{user.role}</p>
             </div>
             <div className="border-t">
-              <button className="w-full p-2 hover:bg-gray-100 text-left">
+              <button className="w-full px-4 py-2 hover:bg-gray-100 text-left">
                 Chỉnh sửa profile
               </button>
-              <button className="w-full p-2 hover:bg-gray-100 text-left text-red-500">
+              <button
+                className="w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500"
+                onClick={handleLogout}
+              >
                 Đăng xuất
               </button>
             </div>

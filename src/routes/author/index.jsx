@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "../../components";
-import AuthorLayout from "../../layouts/AuthorLayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 import AuthorDashboard from "../../pages/author/AuthorDashboard";
 // import CreatePost from "pages/author/CreatePost";
 
@@ -10,7 +10,7 @@ const AuthorRoutes = [
     children: [
       {
         path: "",
-        element: <AuthorLayout />,
+        element: <DashboardLayout />,
         children: [
           { path: "dashboard", element: <AuthorDashboard /> },
           // { path: "posts/create", element: <CreatePost /> },

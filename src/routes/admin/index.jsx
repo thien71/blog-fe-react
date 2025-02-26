@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "../../components";
-import AdminLayout from "../../layouts/AdminLayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 import AdminDashboard from "../../pages/admin/AdminDashboard";
 // import UserManagement from "pages/admin/UserManagement";
 // import PostApproval from "pages/admin/PostApproval";
@@ -11,7 +11,7 @@ const AdminRoutes = [
     children: [
       {
         path: "",
-        element: <AdminLayout />,
+        element: <DashboardLayout />,
         children: [
           { path: "dashboard", element: <AdminDashboard /> },
           // { path: "users", element: <UserManagement /> },
