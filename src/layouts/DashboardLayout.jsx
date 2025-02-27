@@ -5,7 +5,7 @@ import UserAPI from "../apis/endpoints/users";
 
 const adminMenu = [
   { path: "/admin/posts", label: "Quản lí bài viết" },
-  { path: "/admin/users", label: "Quản lí tài khoản" },
+  { path: "/admin/users", label: "Quản lí người dùng" },
   { path: "/admin/categories", label: "Quản lí danh mục" },
   { path: "/admin/tags", label: "Quản lí các tag" },
 ];

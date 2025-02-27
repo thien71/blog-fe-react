@@ -8,7 +8,11 @@ export { default as Sidebar } from "./sidebar/Sidebar";
 export { default as DashboardSidebar } from "./sidebar/DashboardSidebar";
 
 export { default as Button } from "./button/Button";
-export { default as TextField } from "./text_field/TextField";
+export { default as Input } from "./input/Input";
+export { default as Select } from "./select/Select";
+export { default as Table } from "./table/Table";
+export { default as Pagination } from "./pagination/Pagination";
+export { default as UserModal } from "./modal/UserModal";
 
 export { default as PostItem } from "./posts/PostItem";
 export { default as PostsList } from "./posts/PostsList";

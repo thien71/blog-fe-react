@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFileAlt, FaUsers, FaTags, FaList } from "react-icons/fa";
+import StatCard from "./components/StatCard";
+import TagCategoryList from "./components/TagCategoryList";
+import PostItem from "./components/PostItem";
+import PostAPI from "../../apis/endpoints/posts";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -9,54 +13,33 @@ const AdminDashboard = () => {
     totalTags: 15,
   });
 
-  const [topPosts, setTopPosts] = useState([
-    { title: "Cách học React hiệu quả", views: 2300, image: "react.jpg" },
-    { title: "Hướng dẫn sử dụng Tailwind", views: 1950, image: "tailwind.jpg" },
-    { title: "Cách viết bài chuẩn SEO", views: 1600, image: "seo.jpg" },
-    { title: "Laravel 9 cho người mới", views: 1400, image: "laravel.jpg" },
-    {
-      title: "Tối ưu performance trong React",
-      views: 1200,
-      image: "performance.jpg",
-    },
-    { title: "Cách học React hiệu quả", views: 2300, image: "react.jpg" },
-    { title: "Hướng dẫn sử dụng Tailwind", views: 1950, image: "tailwind.jpg" },
-    { title: "Cách viết bài chuẩn SEO", views: 1600, image: "seo.jpg" },
-    { title: "Laravel 9 cho người mới", views: 1400, image: "laravel.jpg" },
-    {
-      title: "Tối ưu performance trong React",
-      views: 1200,
-      image: "performance.jpg",
-    },
-  ]);
+  const [topPosts, setTopPosts] = useState([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await PostAPI.getPopular(10);
+        if (response.data.data?.length) {
+          setTopPosts(response.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải bài viết phổ biến:", error);
+      }
+    })();
+  }, []);
 
-  const [recentPosts, setRecentPosts] = useState([
-    {
-      title: "React Server Components là gì?",
-      date: "26/02/2025",
-      image: "rsc.jpg",
-    },
-    {
-      title: "Tại sao nên dùng Zustand thay vì Redux?",
-      date: "25/02/2025",
-      image: "zustand.jpg",
-    },
-    {
-      title: "API caching trong Next.js",
-      date: "24/02/2025",
-      image: "nextjs.jpg",
-    },
-    {
-      title: "Tại sao nên dùng Zustand thay vì Redux?",
-      date: "25/02/2025",
-      image: "zustand.jpg",
-    },
-    {
-      title: "API caching trong Next.js",
-      date: "24/02/2025",
-      image: "nextjs.jpg",
-    },
-  ]);
+  const [recentPosts, setRecentPosts] = useState([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await PostAPI.getLatest(5);
+        if (response.data.data?.length) {
+          setRecentPosts(response.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải bài viết nổi bật:", error);
+      }
+    })();
+  }, []);
 
   const [popularTags, setPopularTags] = useState([
     { name: "React", count: 10 },
@@ -89,7 +72,7 @@ const AdminDashboard = () => {
       />
       <StatCard
         icon={<FaTags size={30} />}
-        title="Thẻ (Tags)"
+        title="Tags"
         value={stats.totalTags}
       />
       <div className="col-span-full grid grid-cols-3 gap-3">
@@ -97,10 +80,17 @@ const AdminDashboard = () => {
           <h2 className="text-lg font-semibold mb-2">
             Top 10 bài viết nhiều lượt xem
           </h2>
-          <div className="space-y-2">
-            {topPosts.map((post, index) => (
-              <PostItem key={index} post={post} />
-            ))}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="col-span-1 space-y-2">
+              {topPosts.slice(0, 5).map((post, index) => (
+                <PostItem key={index} post={post} type="popular" />
+              ))}
+            </div>
+            <div className="col-span-1 space-y-2">
+              {topPosts.slice(5, 10).map((post, index) => (
+                <PostItem key={index} post={post} type="popular" />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -108,63 +98,23 @@ const AdminDashboard = () => {
           <h2 className="text-lg font-semibold mb-2">Bài viết gần đây</h2>
           <div className="space-y-2">
             {recentPosts.map((post, index) => (
-              <PostItem key={index} post={post} />
+              <PostItem key={index} post={post} type="latest" />
             ))}
           </div>
         </div>
       </div>
 
       <div className="bg-white shadow-md rounded-lg py-3 px-4 col-span-2">
-        <h2 className="text-lg font-semibold mb-2">Tag phổ biến</h2>
-        <TagCategoryList items={popularTags} />
+        <h2 className="text-lg font-semibold mb-2">Danh mục phổ biến</h2>
+        <TagCategoryList items={popularCategories} />
       </div>
 
       <div className="bg-white shadow-md rounded-lg py-3 px-4 col-span-2">
-        <h2 className="text-lg font-semibold mb-2">Danh mục phổ biến</h2>
-        <TagCategoryList items={popularCategories} />
+        <h2 className="text-lg font-semibold mb-2">Tag phổ biến</h2>
+        <TagCategoryList items={popularTags} />
       </div>
     </div>
   );
 };
-
-const StatCard = ({ icon, title, value }) => (
-  <div className="bg-white shadow-md rounded-lg px-4 py-2 flex items-center space-x-4">
-    <div className="text-blue-500">{icon}</div>
-    <div>
-      <p className="text-gray-600">{title}</p>
-      <p className="text-xl font-semibold">{value}</p>
-    </div>
-  </div>
-);
-
-const PostItem = ({ post }) => (
-  <div className="flex items-center bg-gray-100 p-2 rounded-lg">
-    <div className="w-20 h-12 bg-gray-300 rounded-md" />
-    <div className="ml-4">
-      <p className="text-sm font-semibold">{post.title}</p>
-      {post.views ? (
-        <p className="text-xs text-gray-500">{post.views} lượt xem</p>
-      ) : (
-        <p className="text-xs text-gray-500">{post.date}</p>
-      )}
-    </div>
-  </div>
-);
-
-const TagCategoryList = ({ items }) => (
-  <div className="grid grid-cols-3 gap-2">
-    {items.map((item, index) => (
-      <div
-        key={index}
-        className="flex items-center justify-between bg-gray-100 px-3 py-2 rounded-md"
-      >
-        <span className="text-[15px]">{item.name}</span>
-        <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-          {item.count}
-        </span>
-      </div>
-    ))}
-  </div>
-);
 
 export default AdminDashboard;

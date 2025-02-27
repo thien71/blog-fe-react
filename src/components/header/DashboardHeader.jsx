@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthAPI from "../../apis/endpoints/auth";
 
 const DashboardHeader = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   const handleLogout = async () => {
     try {
@@ -16,11 +17,27 @@ const DashboardHeader = ({ user }) => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <header className="flex justify-between items-center py-3 px-4 border-b bg-white fixed top-0 w-full z-10">
       <div className="text-title font-bold">LOGO</div>
 
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <button
           className="flex items-center space-x-2"
           onClick={() => setIsOpen(!isOpen)}

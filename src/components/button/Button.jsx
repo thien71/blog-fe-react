@@ -25,6 +25,7 @@ const Button = ({
   fullWidth = false,
   loading = false,
   onClick,
+  className,
   ...props
 }) => {
   return (
@@ -33,7 +34,7 @@ const Button = ({
         ${buttonVariants[variant]} ${sizeClasses[size]} 
         ${fullWidth ? "w-full" : ""} ${
         disabled ? "opacity-50 cursor-not-allowed" : ""
-      }`}
+      } ${className}`}
       disabled={disabled || loading}
       onClick={onClick}
       {...props}
