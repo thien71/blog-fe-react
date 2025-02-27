@@ -11,13 +11,13 @@ import {
 import UserAPI from "../../apis/endpoints/users";
 
 const filters = [
-  { value: "", label: "Tất cả" },
+  { value: "", label: "Vai trò" },
   { value: "admin", label: "Admin" },
   { value: "author", label: "Author" },
 ];
 
 const status = [
-  { value: "", label: "Tất cả" },
+  { value: "", label: "Trạng thái" },
   { value: "Active", label: "Hoạt động" },
   { value: "Disabled", label: "Vô hiệu hóa" },
 ];
@@ -64,6 +64,13 @@ const UserManagement = () => {
   const openModal = (user) => {
     setSelectedUser(user);
     setIsModalOpen(true);
+  };
+
+  const handleUpdated = (updatedUser) => {
+    setUsers((prev) =>
+      prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+    );
+    setSelectedUser(null);
   };
 
   return (
@@ -117,17 +124,21 @@ const UserManagement = () => {
                   <span className="text-green-500">Hoạt động</span>
                 )}
               </td>
-              <td className="border p-2 flex justify-center gap-4">
-                <Button
-                  variant="outline"
-                  className={"border-blue-500 text-hover hover:bg-blue-200"}
-                  onClick={() => openModal(user)}
-                >
-                  <FiEdit />
-                </Button>
-                <Button variant="danger">
-                  <FiTrash2 />
-                </Button>
+              <td className="border p-2">
+                <div className="flex justify-center gap-4 items-center">
+                  <Button
+                    variant="outline"
+                    className={
+                      "border-blue-500 text-hover hover:bg-blue-200 block"
+                    }
+                    onClick={() => openModal(user)}
+                  >
+                    <FiEdit />
+                  </Button>
+                  <Button variant="danger" className={"block"}>
+                    <FiTrash2 />
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
@@ -144,6 +155,7 @@ const UserManagement = () => {
           isOpen={isModalOpen}
           user={selectedUser}
           onClose={() => setIsModalOpen(false)}
+          onUpdated={handleUpdated}
         />
       )}
     </div>
