@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import UserAPI from "../../apis/endpoints/users";
 import {
   Button,
   Input,
   Select,
   Table,
   Pagination,
-  UserModal,
+  EditUserModal,
+  CreateUserModal,
+  ConfirmModal,
 } from "../../components";
-import UserAPI from "../../apis/endpoints/users";
+
+import defaultAvatar from "../../assets/images/default_avatar.jpg";
+import { FaBan, FaUnlock } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
+import { IoIosAddCircle } from "react-icons/io";
 
 const filters = [
   { value: "", label: "Vai trò" },
@@ -27,22 +33,27 @@ const UserManagement = () => {
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null); // Xác định hành động khóa/mở khóa
+  const [userToConfirm, setUserToConfirm] = useState(null);
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await UserAPI.getAll();
-        if (response.data.data?.length) {
-          setUsers(response.data.data);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải users", error);
+  const fetchUsers = async () => {
+    try {
+      const response = await UserAPI.getAll();
+      if (response.data.data?.length) {
+        setUsers(response.data.data);
       }
-    })();
+    } catch (error) {
+      console.error("Lỗi khi tải users", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   const filteredUsers = users.filter((user) => {
@@ -61,9 +72,14 @@ const UserManagement = () => {
 
   const paginatedUsers = filteredUsers.slice((page - 1) * 5, page * 5);
 
-  const openModal = (user) => {
+  const openEditUserModal = (user) => {
     setSelectedUser(user);
-    setIsModalOpen(true);
+    setIsEditUserModalOpen(true);
+  };
+
+  const openCreateUserModal = () => {
+    setSelectedUser(null);
+    setIsCreateUserModalOpen(true);
   };
 
   const handleUpdated = (updatedUser) => {
@@ -71,6 +87,33 @@ const UserManagement = () => {
       prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
     setSelectedUser(null);
+  };
+
+  const openConfirmModal = (user, action) => {
+    setUserToConfirm(user);
+    setConfirmAction(action);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!userToConfirm) return;
+
+    try {
+      if (confirmAction === "disable") {
+        await UserAPI.delete(userToConfirm.id);
+      } else if (confirmAction === "enable") {
+        await UserAPI.restore(userToConfirm.id);
+      }
+      fetchUsers();
+    } catch (error) {
+      alert(
+        `Có lỗi xảy ra khi ${
+          confirmAction === "disable" ? "vô hiệu hóa" : "mở khóa"
+        } người dùng!`
+      );
+    }
+
+    setIsConfirmModalOpen(false);
   };
 
   return (
@@ -92,7 +135,17 @@ const UserManagement = () => {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         />
+        <Button
+          variant="primary"
+          size="md"
+          onClick={openCreateUserModal}
+          className="gap-2"
+        >
+          <IoIosAddCircle size={20} />
+          <span>Tạo người dùng mới</span>
+        </Button>
       </div>
+
       <Table>
         <thead>
           <tr>
@@ -109,7 +162,7 @@ const UserManagement = () => {
             <tr key={user.id}>
               <td className="border p-2">
                 <img
-                  src={user.avatar || "https://i.pravatar.cc/40"}
+                  src={user.avatar || defaultAvatar}
                   alt={user.name}
                   className="w-10 h-10 rounded-full border mx-auto"
                 />
@@ -118,7 +171,7 @@ const UserManagement = () => {
               <td className="border p-2">{user.email}</td>
               <td className="border p-2 text-center">{user.role}</td>
               <td className="border p-2 text-center">
-                {user.deleted_at ? (
+                {user.is_disabled ? (
                   <span className="text-red-500">Vô hiệu hóa</span>
                 ) : (
                   <span className="text-green-500">Hoạt động</span>
@@ -128,16 +181,27 @@ const UserManagement = () => {
                 <div className="flex justify-center gap-4 items-center">
                   <Button
                     variant="outline"
-                    className={
-                      "border-blue-500 text-hover hover:bg-blue-200 block"
-                    }
-                    onClick={() => openModal(user)}
+                    className="border-blue-500 text-hover hover:bg-blue-200 block"
+                    onClick={() => openEditUserModal(user)}
                   >
                     <FiEdit />
                   </Button>
-                  <Button variant="danger" className={"block"}>
-                    <FiTrash2 />
-                  </Button>
+
+                  {user.is_disabled ? (
+                    <Button
+                      variant="success"
+                      onClick={() => openConfirmModal(user, "enable")}
+                    >
+                      <FaUnlock />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="danger"
+                      onClick={() => openConfirmModal(user, "disable")}
+                    >
+                      <FaBan />
+                    </Button>
+                  )}
                 </div>
               </td>
             </tr>
@@ -150,12 +214,37 @@ const UserManagement = () => {
         currentPage={page}
         onPageChange={setPage}
       />
-      {isModalOpen && (
-        <UserModal
-          isOpen={isModalOpen}
+      {isEditUserModalOpen && (
+        <EditUserModal
+          isOpen={isEditUserModalOpen}
           user={selectedUser}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsEditUserModalOpen(false)}
           onUpdated={handleUpdated}
+        />
+      )}
+
+      {isCreateUserModalOpen && (
+        <CreateUserModal
+          isOpen={isCreateUserModalOpen}
+          onClose={() => setIsCreateUserModalOpen(false)}
+          onCreated={(newUser) => setUsers([...users, newUser])}
+        />
+      )}
+
+      {isConfirmModalOpen && (
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          title={
+            confirmAction === "disable"
+              ? "Xác nhận vô hiệu hóa"
+              : "Xác nhận mở khóa"
+          }
+          message={`Bạn có chắc chắn muốn ${
+            confirmAction === "disable" ? "vô hiệu hóa" : "mở khóa"
+          } người dùng `}
+          object={userToConfirm?.name}
+          onConfirm={handleConfirmAction}
+          onCancel={() => setIsConfirmModalOpen(false)}
         />
       )}
     </div>

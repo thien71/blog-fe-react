@@ -1,8 +1,9 @@
-import { Button, Input } from "../../components";
+import { Button, Input } from "..";
 import { useState, useEffect } from "react";
 import UserAPI from "../../apis/endpoints/users";
+import defaultAvatar from "../../assets/images/default_avatar.jpg";
 
-const UserModal = ({ isOpen, onClose, user, onUpdated }) => {
+const EditUserModal = ({ isOpen, onClose, user, onUpdated }) => {
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -74,7 +75,7 @@ const UserModal = ({ isOpen, onClose, user, onUpdated }) => {
             <label className="block mb-2">Avatar</label>
             <div className="flex flex-col items-center gap-2">
               <img
-                src={avatarPreview || "https://i.pravatar.cc/40"}
+                src={avatarPreview || defaultAvatar}
                 alt="Avatar Preview"
                 className="w-20 h-20 rounded-full border-black mb-2 object-cover block"
               />
@@ -129,4 +130,4 @@ const UserModal = ({ isOpen, onClose, user, onUpdated }) => {
   );
 };
 
-export default UserModal;
+export default EditUserModal;

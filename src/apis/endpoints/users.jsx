@@ -12,6 +12,7 @@ const UserAPI = {
       },
     }),
   delete: (id) => api.delete(`/users/${id}`),
+  restore: (id) => api.patch(`/users/${id}/restore`),
 };
 
 export default UserAPI;
