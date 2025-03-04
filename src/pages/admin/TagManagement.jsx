@@ -1,27 +1,51 @@
 import { useEffect, useState } from "react";
 import TagAPI from "../../apis/endpoints/tags";
 import {
-  Button,
-  Input,
   Table,
   Pagination,
   EditTagModal,
   CreateTagModal,
   ConfirmModal,
+  CategoryTagSearchBar,
+  CategoryTagTableActions,
 } from "../../components";
 
-import { FiEdit } from "react-icons/fi";
-import { IoIosAddCircle } from "react-icons/io";
-import { MdDeleteForever } from "react-icons/md";
+import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
 
 const TagManagement = () => {
   const [tags, setTags] = useState([]);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [selectedTag, setSelectedTag] = useState(null);
-  const [isCreateTagModalOpen, setIsCreateTagModalOpen] = useState(false);
-  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const {
+    isOpen: isEditOpen,
+    selectedItem: selectedTag,
+    openModal: openEditModal,
+    closeModal: closeEditModal,
+  } = useModal();
+  const {
+    isOpen: isCreateOpen,
+    openModal: openCreateModal,
+    closeModal: closeCreateModal,
+  } = useModal();
+  const {
+    isOpen: isConfirmOpen,
+    selectedItem: confirmTag,
+    openModal: openConfirmModal,
+    closeModal: closeConfirmModal,
+  } = useModal();
+
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const {
+    currentPage: page,
+    setCurrentPage: setPage,
+    paginatedData: paginatedTags,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredTags);
 
   const fetchTags = async () => {
     try {
@@ -38,68 +62,36 @@ const TagManagement = () => {
     fetchTags();
   }, []);
 
-  const openEditTagModal = (tag) => {
-    setSelectedTag(tag);
-    setIsEditTagModalOpen(true);
-  };
-
-  const openCreateTagModal = () => {
-    setSelectedTag(null);
-    setIsCreateTagModalOpen(true);
-  };
-
-  const openConfirmModal = (tag) => {
-    setSelectedTag(tag);
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmAction = async () => {
-    try {
-      await TagAPI.delete(selectedTag.id);
-      setSelectedTag(null);
-
-      fetchTags();
-    } catch (error) {
-      console.error("Lỗi khi xác nhận hành động", error);
-    }
-
-    setIsConfirmModalOpen(false);
+  const handleCreated = (newTag) => {
+    setTags([newTag, ...tags]);
   };
 
   const handleUpdated = (updatedTag) => {
     setTags((prev) =>
       prev.map((tag) => (tag.id === updatedTag.id ? updatedTag : tag))
     );
-    setSelectedTag(null);
   };
 
-  const filteredTags = tags.filter((tag) =>
-    tag.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedTags = filteredTags.slice((page - 1) * 7, page * 7);
+  const handleConfirmAction = async () => {
+    try {
+      await TagAPI.delete(confirmTag.id);
+      fetchTags();
+    } catch (error) {
+      console.error("Lỗi khi xác nhận hành động", error);
+    }
+    closeConfirmModal();
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
       <h2 className="text-2xl font-bold mb-4">Quản lý thẻ tag</h2>
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <Input
-          placeholder="Tìm kiếm tag"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div></div>
-        <div></div>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={openCreateTagModal}
-          className="gap-2"
-        >
-          <IoIosAddCircle size={20} />
-          <span>Thêm tag mới</span>
-        </Button>
-      </div>
+
+      <CategoryTagSearchBar
+        type="tag"
+        search={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+        onAddNew={openCreateModal}
+      />
 
       <Table>
         <thead>
@@ -115,55 +107,47 @@ const TagManagement = () => {
               <td className="border p-2">{tag.id}</td>
               <td className="border p-2">{tag.name}</td>
               <td className="border p-2">
-                <div className="flex justify-center gap-4 items-center">
-                  <Button
-                    variant="outline"
-                    className="border-blue-500 text-hover hover:bg-blue-200 block"
-                    onClick={() => openEditTagModal(tag)}
-                  >
-                    <FiEdit />
-                  </Button>
-
-                  <Button
-                    variant="danger"
-                    onClick={() => openConfirmModal(tag)}
-                  >
-                    <MdDeleteForever />
-                  </Button>
-                </div>
+                <CategoryTagTableActions
+                  data={tag}
+                  onEdit={openEditModal}
+                  onDelete={openConfirmModal}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
       <Pagination
-        total={filteredTags.length}
-        perPage={7}
+        total={totalItems}
+        perPage={itemsPerPage}
         currentPage={page}
         onPageChange={setPage}
       />
+
       <EditTagModal
-        isOpen={isEditTagModalOpen}
+        isOpen={isEditOpen}
         tag={selectedTag}
-        onClose={() => setIsEditTagModalOpen(false)}
+        onClose={() => closeEditModal(false)}
         onUpdated={handleUpdated}
       />
 
       <CreateTagModal
-        isOpen={isCreateTagModalOpen}
-        onClose={() => setIsCreateTagModalOpen(false)}
-        onCreated={(newTag) => setTags([newTag, ...tags])}
+        isOpen={isCreateOpen}
+        onClose={() => closeCreateModal(false)}
+        onCreated={handleCreated}
       />
 
       <ConfirmModal
-        isOpen={isConfirmModalOpen}
+        isOpen={isConfirmOpen}
         title={"Xác nhận xoá tag"}
         message={`Bạn có chắc chắn muốn xoá `}
-        object={selectedTag?.name}
+        object={confirmTag?.name}
         onConfirm={handleConfirmAction}
-        onCancel={() => setIsConfirmModalOpen(false)}
+        onCancel={() => closeConfirmModal(false)}
       />
     </div>
   );
 };
+
 export default TagManagement;

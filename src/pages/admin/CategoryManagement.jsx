@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
 import CategoryAPI from "../../apis/endpoints/categories";
 import {
   Table,
@@ -9,9 +11,6 @@ import {
   CategoryTagSearchBar,
   CategoryTagTableActions,
 } from "../../components";
-
-import useModal from "../../hooks/useModal";
-import usePagination from "../../hooks/usePagination";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -109,7 +108,7 @@ const CategoryManagement = () => {
               <td className="border p-2">{category.name}</td>
               <td className="border p-2">
                 <CategoryTagTableActions
-                  category={category}
+                  data={category}
                   onEdit={openEditModal}
                   onDelete={openConfirmModal}
                 />

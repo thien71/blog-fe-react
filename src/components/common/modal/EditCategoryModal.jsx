@@ -1,4 +1,4 @@
-import { Modal, CategoryForm } from "../../../components";
+import { Modal, CategoryTagForm } from "../../../components";
 import CategoryAPI from "../../../apis/endpoints/categories";
 import useForm from "../../../hooks/useForm";
 import { useEffect } from "react";
@@ -39,7 +39,7 @@ const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
       onClose={onClose}
       onConfirm={handleSubmit}
     >
-      <CategoryForm formData={formData} handleChange={handleChange} />
+      <CategoryTagForm formData={formData} handleChange={handleChange} />
     </Modal>
   );
 };

@@ -1,11 +1,16 @@
 import { IoIosAddCircle } from "react-icons/io";
 import { Button, Input } from "../..";
 
-const CategoryTagSearchBar = ({ search, onSearchChange, onAddNew }) => {
+const CategoryTagSearchBar = ({
+  search,
+  onSearchChange,
+  onAddNew,
+  type = "category",
+}) => {
   return (
     <div className="grid grid-cols-4 gap-4 mb-6">
       <Input
-        placeholder="Tìm kiếm danh mục"
+        placeholder={`Tìm kiếm ${type === "category" ? "danh mục" : "thẻ tag"}`}
         value={search}
         onChange={onSearchChange}
       />
@@ -13,7 +18,7 @@ const CategoryTagSearchBar = ({ search, onSearchChange, onAddNew }) => {
       <div></div>
       <Button variant="primary" size="md" onClick={onAddNew} className="gap-2">
         <IoIosAddCircle size={20} />
-        <span>Thêm danh mục mới</span>
+        <span>{`Thêm  ${type === "category" ? "danh mục" : "tag"} mới`}</span>
       </Button>
     </div>
   );

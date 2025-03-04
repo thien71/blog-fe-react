@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Input } from "../../../components";
+import { Input } from "../..";
 
-const CategoryForm = ({ formData, handleChange }) => {
+const CategoryTagForm = ({ formData, handleChange }) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -31,4 +31,4 @@ const CategoryForm = ({ formData, handleChange }) => {
   );
 };
 
-export default CategoryForm;
+export default CategoryTagForm;
