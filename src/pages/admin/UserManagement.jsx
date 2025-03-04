@@ -2,44 +2,66 @@ import { useEffect, useState } from "react";
 import UserAPI from "../../apis/endpoints/users";
 import {
   Button,
-  Input,
-  Select,
   Table,
   Pagination,
   EditUserModal,
   CreateUserModal,
   ConfirmModal,
+  UserSearchBar,
+  UserTableActions,
+  Avatar,
 } from "../../components";
 
-import defaultAvatar from "../../assets/images/default_avatar.jpg";
-import { FaBan, FaUnlock } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
-import { IoIosAddCircle } from "react-icons/io";
-
-const filters = [
-  { value: "", label: "Vai trò" },
-  { value: "admin", label: "Admin" },
-  { value: "author", label: "Author" },
-];
-
-const status = [
-  { value: "", label: "Trạng thái" },
-  { value: "Active", label: "Hoạt động" },
-  { value: "Disabled", label: "Vô hiệu hóa" },
-];
+import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
 
 const UserManagement = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [page, setPage] = useState(1);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
-  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState(null); // Xác định hành động khóa/mở khóa
-  const [userToConfirm, setUserToConfirm] = useState(null);
   const [users, setUsers] = useState([]);
+
+  const {
+    isOpen: isEditOpen,
+    selectedItem: selectedUser,
+    openModal: openEditModal,
+    closeModal: closeEditModal,
+  } = useModal();
+
+  const {
+    isOpen: isCreateOpen,
+    openModal: openCreateModal,
+    closeModal: closeCreateModal,
+  } = useModal();
+
+  const {
+    isOpen: isConfirmOpen,
+    selectedItem: userToConfirm,
+    openModal: openConfirmModal,
+    closeModal: closeConfirmModal,
+  } = useModal();
+
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = user.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesRole = filter ? user.role === filter : true;
+    const matchesStatus =
+      statusFilter === "Active"
+        ? !user.is_disabled
+        : statusFilter === "Disabled"
+        ? user.is_disabled
+        : true;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const {
+    currentPage: page,
+    setCurrentPage: setPage,
+    paginatedData: paginatedUsers,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredUsers);
 
   const fetchUsers = async () => {
     try {
@@ -56,95 +78,42 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesRole = filter ? user.role === filter : true;
-    const matchesStatus =
-      statusFilter === "Active"
-        ? !user.deleted_at
-        : statusFilter === "Disabled"
-        ? user.deleted_at
-        : true;
-    return matchesSearch && matchesRole && matchesStatus;
-  });
-
-  const paginatedUsers = filteredUsers.slice((page - 1) * 5, page * 5);
-
-  const openEditUserModal = (user) => {
-    setSelectedUser(user);
-    setIsEditUserModalOpen(true);
-  };
-
-  const openCreateUserModal = () => {
-    setSelectedUser(null);
-    setIsCreateUserModalOpen(true);
-  };
+  const handleCreated = (newUser) => setUsers([newUser, ...users]);
 
   const handleUpdated = (updatedUser) => {
     setUsers((prev) =>
       prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
-    setSelectedUser(null);
-  };
-
-  const openConfirmModal = (user, action) => {
-    setUserToConfirm(user);
-    setConfirmAction(action);
-    setIsConfirmModalOpen(true);
   };
 
   const handleConfirmAction = async () => {
     if (!userToConfirm) return;
-
     try {
-      if (confirmAction === "disable") {
-        await UserAPI.delete(userToConfirm.id);
-      } else if (confirmAction === "enable") {
+      if (userToConfirm.is_disabled) {
         await UserAPI.restore(userToConfirm.id);
+      } else {
+        await UserAPI.delete(userToConfirm.id);
       }
       fetchUsers();
     } catch (error) {
-      alert(
-        `Có lỗi xảy ra khi ${
-          confirmAction === "disable" ? "vô hiệu hóa" : "mở khóa"
-        } người dùng!`
-      );
+      console.error("Lỗi khi xử lý hành động xác nhận", error);
     }
-
-    setIsConfirmModalOpen(false);
+    closeConfirmModal();
   };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
       <h2 className="text-2xl font-bold mb-4">Quản lý người dùng</h2>
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <Input
-          placeholder="Tìm kiếm người dùng..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Select
-          options={filters}
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <Select
-          options={status}
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        />
-        <Button
-          variant="primary"
-          size="md"
-          onClick={openCreateUserModal}
-          className="gap-2"
-        >
-          <IoIosAddCircle size={20} />
-          <span>Tạo người dùng mới</span>
-        </Button>
-      </div>
+
+      <UserSearchBar
+        search={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+        filter={filter}
+        setFilter={setFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        onAddNew={openCreateModal}
+      />
 
       <Table>
         <thead>
@@ -161,11 +130,7 @@ const UserManagement = () => {
           {paginatedUsers.map((user) => (
             <tr key={user.id}>
               <td className="border p-2">
-                <img
-                  src={user.avatar || defaultAvatar}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full border mx-auto"
-                />
+                <Avatar src={user.avatar} alt={user.name} />
               </td>
               <td className="border p-2">{user.name}</td>
               <td className="border p-2">{user.email}</td>
@@ -178,73 +143,52 @@ const UserManagement = () => {
                 )}
               </td>
               <td className="border p-2">
-                <div className="flex justify-center gap-4 items-center">
-                  <Button
-                    variant="outline"
-                    className="border-blue-500 text-hover hover:bg-blue-200 block"
-                    onClick={() => openEditUserModal(user)}
-                  >
-                    <FiEdit />
-                  </Button>
-
-                  {user.is_disabled ? (
-                    <Button
-                      variant="success"
-                      onClick={() => openConfirmModal(user, "enable")}
-                    >
-                      <FaUnlock />
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="danger"
-                      onClick={() => openConfirmModal(user, "disable")}
-                    >
-                      <FaBan />
-                    </Button>
-                  )}
-                </div>
+                <UserTableActions
+                  user={user}
+                  onEdit={openEditModal}
+                  onConfirm={openConfirmModal}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
       <Pagination
-        total={filteredUsers.length}
-        perPage={5}
+        total={totalItems}
+        perPage={itemsPerPage}
         currentPage={page}
         onPageChange={setPage}
       />
-      {isEditUserModalOpen && (
+
+      {isEditOpen && (
         <EditUserModal
-          isOpen={isEditUserModalOpen}
+          isOpen={isEditOpen}
           user={selectedUser}
-          onClose={() => setIsEditUserModalOpen(false)}
+          onClose={() => closeEditModal()}
           onUpdated={handleUpdated}
         />
       )}
 
-      {isCreateUserModalOpen && (
+      {isCreateOpen && (
         <CreateUserModal
-          isOpen={isCreateUserModalOpen}
-          onClose={() => setIsCreateUserModalOpen(false)}
-          onCreated={(newUser) => setUsers([...users, newUser])}
+          isOpen={isCreateOpen}
+          onClose={() => closeCreateModal()}
+          onCreated={handleCreated}
         />
       )}
 
-      {isConfirmModalOpen && (
+      {isConfirmOpen && (
         <ConfirmModal
-          isOpen={isConfirmModalOpen}
-          title={
-            confirmAction === "disable"
-              ? "Xác nhận vô hiệu hóa"
-              : "Xác nhận mở khóa"
-          }
+          isOpen={isConfirmOpen}
+          title={`Xác nhận ${
+            userToConfirm?.is_disabled ? "mở khóa" : "vô hiệu hóa"
+          }`}
           message={`Bạn có chắc chắn muốn ${
-            confirmAction === "disable" ? "vô hiệu hóa" : "mở khóa"
-          } người dùng `}
-          object={userToConfirm?.name}
+            userToConfirm?.is_disabled ? "mở khóa" : "vô hiệu hóa"
+          } người dùng ${userToConfirm?.name}?`}
           onConfirm={handleConfirmAction}
-          onCancel={() => setIsConfirmModalOpen(false)}
+          onCancel={() => closeConfirmModal()}
         />
       )}
     </div>

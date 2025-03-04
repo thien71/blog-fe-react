@@ -16,7 +16,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreated }) => {
     role: "author",
   });
 
-  const [error, setError] = useState(""); // Chỉ hiển thị lỗi đầu tiên
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -87,6 +87,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreated }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
         <h2 className="text-xl font-bold mb-4">Thêm mới người dùng</h2>
+
         <form onSubmit={handleSubmit} className="grid grid-rows-2 gap-4">
           <div className="col-span-1">
             <label className="block mb-1">Tên</label>
