@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Header, Footer, Sidebar } from "../components";
-import PostsSidebar from "../components/sidebar/PostsSidebar";
+import { Header, Footer, Sidebar, PostsSidebar } from "../components";
 
 const PostDetailLayout = () => {
   return (

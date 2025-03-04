@@ -1,6 +1,6 @@
-import { Button, Input, Select } from "..";
+import { Button, Input } from "../../../components";
 import { useState } from "react";
-import CategoryAPI from "../../apis/endpoints/categories";
+import CategoryAPI from "../../../apis/endpoints/categories";
 
 const CreateCategoryModal = ({ isOpen, onClose, onCreated }) => {
   const [formData, setFormData] = useState({

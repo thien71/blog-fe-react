@@ -1,6 +1,6 @@
-import { Button, Input, Select } from "../../components";
+import { Button, Input, Select } from "../../../components";
 import { useState } from "react";
-import AuthAPI from "../../apis/endpoints/auth";
+import AuthAPI from "../../../apis/endpoints/auth";
 
 const roleOptions = [
   { value: "author", label: "Author" },

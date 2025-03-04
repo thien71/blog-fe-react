@@ -1,7 +1,7 @@
-import { Button, Input } from "..";
+import { Button, Input } from "../../../components";
 import { useState, useEffect } from "react";
-import UserAPI from "../../apis/endpoints/users";
-import defaultAvatar from "../../assets/images/default_avatar.jpg";
+import UserAPI from "../../../apis/endpoints/users";
+import defaultAvatar from "../../../assets/images/default_avatar.jpg";
 
 const EditUserModal = ({ isOpen, onClose, user, onUpdated }) => {
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");

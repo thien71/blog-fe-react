@@ -1,4 +1,4 @@
-import { Button } from "../../components";
+import { Button } from "../../../components";
 
 const Pagination = ({ total, perPage, currentPage, onPageChange }) => {
   const totalPages = Math.ceil(total / perPage);

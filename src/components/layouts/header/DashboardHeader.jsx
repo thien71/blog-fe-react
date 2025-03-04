@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthAPI from "../../apis/endpoints/auth";
+import AuthAPI from "../../../apis/endpoints/auth";
 
 const DashboardHeader = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);

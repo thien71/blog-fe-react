@@ -1,6 +1,6 @@
-import { Button, Input, Select } from "..";
+import { Button, Input } from "../../../components";
 import { useState } from "react";
-import TagAPI from "../../apis/endpoints/tags";
+import TagAPI from "../../../apis/endpoints/tags";
 
 const CreateTagModal = ({ isOpen, onClose, onCreated }) => {
   const [formData, setFormData] = useState({

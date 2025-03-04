@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import PostAPI from "../../apis/endpoints/posts";
-import { PostItem } from "../../components/index";
-import { Divider } from "../index";
+import PostAPI from "../../../apis/endpoints/posts";
+import { PostItem, Divider } from "../../../components";
 import { Link } from "react-router-dom";
 
 const PostsSidebar = () => {

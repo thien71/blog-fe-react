@@ -1,4 +1,4 @@
-import { PostsList, SocialLinks } from "../index";
+import { PostsList, SocialLinks } from "../../../components";
 
 const Sidebar = () => {
   return (

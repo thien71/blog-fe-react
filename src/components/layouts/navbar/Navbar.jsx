@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
-import Button from "../button/Button";
+import { Button } from "../../../components";
 
 const menuItems = [
   { name: "Home", path: "/" },

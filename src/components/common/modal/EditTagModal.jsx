@@ -1,18 +1,18 @@
-import { Button, Input } from "..";
+import { Button, Input } from "../../../components";
 import { useState, useEffect } from "react";
-import CategoryAPI from "../../apis/endpoints/categories";
+import TagAPI from "../../../apis/endpoints/tags";
 
-const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
+const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: category?.name || "",
+    name: tag?.name || "",
   });
 
   useEffect(() => {
     setFormData({
-      name: category?.name || "",
+      name: tag?.name || "",
     });
-  }, [category]);
+  }, [tag]);
 
   if (!isOpen) return null;
 
@@ -31,11 +31,11 @@ const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
     data.append("name", formData.name);
 
     try {
-      const response = await CategoryAPI.update(category.id, data);
+      const response = await TagAPI.update(tag.id, data);
       onUpdated(response.data.data);
       onClose();
     } catch (error) {
-      console.error("Lỗi khi cập nhật category:", error);
+      console.error("Lỗi khi cập nhật tag:", error);
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-        <h2 className="text-xl font-bold mb-4">Chỉnh sửa tên Category</h2>
+        <h2 className="text-xl font-bold mb-4">Chỉnh sửa tên tag</h2>
         <div className="grid grid-cols-1 gap-6">
           <div className="flex flex-col gap-2">
             <div>
@@ -71,4 +71,4 @@ const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
   );
 };
 
-export default EditCategoryModal;
+export default EditTagModal;

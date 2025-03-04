@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { PostItem } from "../index";
-import PostAPI from "../../apis/endpoints/posts";
+import { PostItem } from "../../index";
+import PostAPI from "../../../apis/endpoints/posts";
 import { Link } from "react-router-dom";
 
 const PostsList = () => {
