@@ -13,15 +13,34 @@ import {
 import { FiEdit } from "react-icons/fi";
 import { IoIosAddCircle } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
+import useModal from "../../hooks/useModal";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  // const [selectedCategory, setSelectedCategory] = useState(null);
+  // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const {
+    isOpen: isEditOpen,
+    selectedItem: selectedCategory,
+    openModal: openEditModal,
+    closeModal: closeEditModal,
+  } = useModal();
+  const {
+    isOpen: isCreateOpen,
+    openModal: openCreateModal,
+    closeModal: closeCreateModal,
+  } = useModal();
+  const {
+    isOpen: isConfirmOpen,
+    selectedItem: confirmCategory,
+    openModal: openConfirmModal,
+    closeModal: closeConfirmModal,
+  } = useModal();
 
   const fetchCategories = async () => {
     try {
@@ -38,30 +57,31 @@ const CategoryManagement = () => {
     fetchCategories();
   }, []);
 
-  const openEditModal = (category) => {
-    setSelectedCategory(category);
-    setIsEditModalOpen(true);
-  };
+  // const openEditModal = (category) => {
+  //   setSelectedCategory(category);
+  //   setIsEditModalOpen(true);
+  // };
 
-  const openCreateModal = () => {
-    setSelectedCategory(null);
-    setIsCreateModalOpen(true);
-  };
+  // const openCreateModal = () => {
+  //   setSelectedCategory(null);
+  //   setIsCreateModalOpen(true);
+  // };
 
-  const openConfirmModal = (category) => {
-    setSelectedCategory(category);
-    setIsConfirmModalOpen(true);
-  };
+  // const openConfirmModal = (category) => {
+  //   setSelectedCategory(category);
+  //   setIsConfirmModalOpen(true);
+  // };
 
   const handleConfirmAction = async () => {
     try {
       await CategoryAPI.delete(selectedCategory.id);
-      setSelectedCategory(null);
+      // setSelectedCategory(null);
       fetchCategories();
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     }
-    setIsConfirmModalOpen(false);
+    closeConfirmModal();
+    // setIsConfirmModalOpen(false);
   };
 
   const handleUpdated = (updatedCategory) => {
@@ -70,7 +90,7 @@ const CategoryManagement = () => {
         category.id === updatedCategory.id ? updatedCategory : category
       )
     );
-    setSelectedCategory(null);
+    // setSelectedCategory(null);
   };
 
   const filteredCategories = categories.filter((category) =>
@@ -146,25 +166,25 @@ const CategoryManagement = () => {
         onPageChange={setPage}
       />
       <EditCategoryModal
-        isOpen={isEditModalOpen}
+        isOpen={isEditOpen}
         category={selectedCategory}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => closeEditModal(false)}
         onUpdated={handleUpdated}
       />
 
       <CreateCategoryModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={isCreateOpen}
+        onClose={() => closeCreateModal(false)}
         onCreated={(newCategory) => setCategories([newCategory, ...categories])}
       />
 
       <ConfirmModal
-        isOpen={isConfirmModalOpen}
+        isOpen={isConfirmOpen}
         title={"Xác nhận xoá danh mục"}
         message={`Bạn có chắc chắn muốn xoá `}
-        object={selectedCategory?.name}
+        object={confirmCategory?.name}
         onConfirm={handleConfirmAction}
-        onCancel={() => setIsConfirmModalOpen(false)}
+        onCancel={() => closeConfirmModal(false)}
       />
     </div>
   );

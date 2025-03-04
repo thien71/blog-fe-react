@@ -33,9 +33,6 @@ const DashboardLayout = () => {
   }, []);
 
   if (!user) return <p>Loading...</p>;
-  {
-    console.log("Usser", user.role);
-  }
 
   return (
     <div className="flex flex-col h-screen">
