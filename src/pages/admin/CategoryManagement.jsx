@@ -1,28 +1,21 @@
 import { useEffect, useState } from "react";
 import CategoryAPI from "../../apis/endpoints/categories";
 import {
-  Button,
-  Input,
   Table,
   Pagination,
   EditCategoryModal,
   CreateCategoryModal,
   ConfirmModal,
+  CategoryTagSearchBar,
+  CategoryTagTableActions,
 } from "../../components";
 
-import { FiEdit } from "react-icons/fi";
-import { IoIosAddCircle } from "react-icons/io";
-import { MdDeleteForever } from "react-icons/md";
 import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  // const [selectedCategory, setSelectedCategory] = useState(null);
-  // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  // const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  // const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const {
     isOpen: isEditOpen,
@@ -42,6 +35,18 @@ const CategoryManagement = () => {
     closeModal: closeConfirmModal,
   } = useModal();
 
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const {
+    currentPage: page,
+    setCurrentPage: setPage,
+    paginatedData: paginatedCategories,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredCategories);
+
   const fetchCategories = async () => {
     try {
       const response = await CategoryAPI.getAll();
@@ -57,31 +62,8 @@ const CategoryManagement = () => {
     fetchCategories();
   }, []);
 
-  // const openEditModal = (category) => {
-  //   setSelectedCategory(category);
-  //   setIsEditModalOpen(true);
-  // };
-
-  // const openCreateModal = () => {
-  //   setSelectedCategory(null);
-  //   setIsCreateModalOpen(true);
-  // };
-
-  // const openConfirmModal = (category) => {
-  //   setSelectedCategory(category);
-  //   setIsConfirmModalOpen(true);
-  // };
-
-  const handleConfirmAction = async () => {
-    try {
-      await CategoryAPI.delete(selectedCategory.id);
-      // setSelectedCategory(null);
-      fetchCategories();
-    } catch (error) {
-      console.error("Lỗi khi xác nhận hành động", error);
-    }
-    closeConfirmModal();
-    // setIsConfirmModalOpen(false);
+  const handleCreated = (newCategory) => {
+    setCategories([newCategory, ...categories]);
   };
 
   const handleUpdated = (updatedCategory) => {
@@ -90,39 +72,27 @@ const CategoryManagement = () => {
         category.id === updatedCategory.id ? updatedCategory : category
       )
     );
-    // setSelectedCategory(null);
   };
 
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedCategories = filteredCategories.slice(
-    (page - 1) * 7,
-    page * 7
-  );
+  const handleConfirmAction = async () => {
+    try {
+      await CategoryAPI.delete(confirmCategory.id);
+      fetchCategories();
+    } catch (error) {
+      console.error("Lỗi khi xác nhận hành động", error);
+    }
+    closeConfirmModal();
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
       <h2 className="text-2xl font-bold mb-4">Quản lý danh mục</h2>
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <Input
-          placeholder="Tìm kiếm danh mục"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div></div>
-        <div></div>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={openCreateModal}
-          className="gap-2"
-        >
-          <IoIosAddCircle size={20} />
-          <span>Thêm danh mục mới</span>
-        </Button>
-      </div>
+
+      <CategoryTagSearchBar
+        search={search}
+        onSearchChange={(e) => setSearch(e.target.value)}
+        onAddNew={openCreateModal}
+      />
 
       <Table>
         <thead>
@@ -138,33 +108,24 @@ const CategoryManagement = () => {
               <td className="border p-2">{category.id}</td>
               <td className="border p-2">{category.name}</td>
               <td className="border p-2">
-                <div className="flex justify-center gap-4 items-center">
-                  <Button
-                    variant="outline"
-                    className="border-blue-500 text-hover hover:bg-blue-200 block"
-                    onClick={() => openEditModal(category)}
-                  >
-                    <FiEdit />
-                  </Button>
-
-                  <Button
-                    variant="danger"
-                    onClick={() => openConfirmModal(category)}
-                  >
-                    <MdDeleteForever />
-                  </Button>
-                </div>
+                <CategoryTagTableActions
+                  category={category}
+                  onEdit={openEditModal}
+                  onDelete={openConfirmModal}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
       <Pagination
-        total={filteredCategories.length}
-        perPage={7}
+        total={totalItems}
+        perPage={itemsPerPage}
         currentPage={page}
         onPageChange={setPage}
       />
+
       <EditCategoryModal
         isOpen={isEditOpen}
         category={selectedCategory}
@@ -175,7 +136,7 @@ const CategoryManagement = () => {
       <CreateCategoryModal
         isOpen={isCreateOpen}
         onClose={() => closeCreateModal(false)}
-        onCreated={(newCategory) => setCategories([newCategory, ...categories])}
+        onCreated={handleCreated}
       />
 
       <ConfirmModal

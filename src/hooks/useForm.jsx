@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const useForm = (initialData = {}) => {
   const [formData, setFormData] = useState(initialData);
@@ -11,8 +11,7 @@ const useForm = (initialData = {}) => {
     });
   };
 
-  // const resetForm = () => setFormData(initialValues);
-  const resetForm = (newValues = initialValues) => {
+  const resetForm = (newValues = {}) => {
     setFormData(newValues);
   };
 
