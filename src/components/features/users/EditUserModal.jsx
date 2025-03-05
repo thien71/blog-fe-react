@@ -1,4 +1,4 @@
-import { Modal, EditUserForm } from "../../../components";
+import { Modal, EditUserForm } from "../..";
 import { useState, useEffect } from "react";
 import UserAPI from "../../../apis/endpoints/users";
 

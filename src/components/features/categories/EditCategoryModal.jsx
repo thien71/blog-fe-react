@@ -1,18 +1,18 @@
-import { Modal, CategoryTagForm } from "../../../components";
-import TagAPI from "../../../apis/endpoints/tags";
+import { Modal, CategoryTagForm } from "../..";
+import CategoryAPI from "../../../apis/endpoints/categories";
 import useForm from "../../../hooks/useForm";
 import { useEffect } from "react";
 
-const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
+const EditCategoryModal = ({ isOpen, onClose, category, onUpdated }) => {
   const { formData, handleChange, resetForm, loading, setLoading } = useForm({
-    name: tag?.name || "",
+    name: category?.name || "",
   });
 
   useEffect(() => {
     if (isOpen) {
-      resetForm({ name: tag?.name });
+      resetForm({ name: category?.name });
     }
-  }, [isOpen, tag]);
+  }, [isOpen, category]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -21,12 +21,12 @@ const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
     data.append("name", formData.name);
 
     try {
-      const response = await TagAPI.update(tag.id, data);
+      const response = await CategoryAPI.update(category.id, data);
       onUpdated(response.data.data);
       resetForm();
       onClose();
     } catch (error) {
-      console.error("Lỗi khi cập nhật tag:", error);
+      console.error("Lỗi khi cập nhật category:", error);
     } finally {
       setLoading(false);
     }
@@ -34,7 +34,7 @@ const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
 
   return (
     <Modal
-      title="Chỉnh sửa tên Tag"
+      title="Chỉnh sửa tên Category"
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleSubmit}
@@ -44,4 +44,4 @@ const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
   );
 };
 
-export default EditTagModal;
+export default EditCategoryModal;

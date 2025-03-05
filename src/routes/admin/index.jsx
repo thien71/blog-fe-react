@@ -4,7 +4,7 @@ import AdminDashboard from "../../pages/admin/AdminDashboard";
 import UserManagement from "../../pages/admin/UserManagement";
 import TagManagement from "../../pages/admin/TagManagement";
 import CategoryManagement from "../../pages/admin/CategoryManagement";
-// import PostApproval from "pages/admin/PostApproval";
+import PostManagement from "../../pages/admin/PostManagement";
 
 const AdminRoutes = [
   {
@@ -19,7 +19,7 @@ const AdminRoutes = [
           { path: "users", element: <UserManagement /> },
           { path: "tags", element: <TagManagement /> },
           { path: "categories", element: <CategoryManagement /> },
-          // { path: "posts", element: <PostApproval /> },
+          { path: "posts", element: <PostManagement /> },
         ],
       },
     ],

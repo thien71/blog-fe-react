@@ -1,4 +1,4 @@
-import { CategoryTagForm, Modal } from "../../../components";
+import { CategoryTagForm, Modal } from "../..";
 import TagAPI from "../../../apis/endpoints/tags";
 import useForm from "../../../hooks/useForm";
 
