@@ -11,6 +11,7 @@ export { default as CategoryTagSearchBar } from "./categories_tags/CategoryTagSe
 export { default as CategoryTagTableActions } from "./categories_tags/CategoryTagTableActions";
 
 // user
-export { default as UserForm } from "./users/UserForm";
+export { default as CreateUserForm } from "./users/CreateUserForm";
+export { default as EditUserForm } from "./users/EditUserForm";
 export { default as UserSearchBar } from "./users/UserSearchBar";
 export { default as UserTableActions } from "./users/UserTableActions";

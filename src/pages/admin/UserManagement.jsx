@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import UserAPI from "../../apis/endpoints/users";
 import {
-  Button,
   Table,
   Pagination,
   EditUserModal,
@@ -61,7 +60,7 @@ const UserManagement = () => {
     paginatedData: paginatedUsers,
     totalItems,
     itemsPerPage,
-  } = usePagination(filteredUsers);
+  } = usePagination(filteredUsers, 6);
 
   const fetchUsers = async () => {
     try {

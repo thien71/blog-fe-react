@@ -7,6 +7,7 @@ const Modal = ({
   isOpen,
   onClose,
   onConfirm,
+  size = "sm",
   confirmText = "Lưu",
   cancelText = "Huỷ",
 }) => {
@@ -22,7 +23,9 @@ const Modal = ({
       if (result instanceof Promise) {
         await result;
       }
-      onClose();
+      if (result === true) {
+        onClose();
+      }
     } catch (error) {
       console.error("Lỗi khi xác nhận:", error);
     } finally {
@@ -30,9 +33,15 @@ const Modal = ({
     }
   };
 
+  const sizeClasses = {
+    sm: "w-[400px]",
+    md: "w-[600px]",
+    lg: "w-[800px]",
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+      <div className={`bg-white p-6 rounded-lg shadow-lg ${sizeClasses[size]}`}>
         <h2 className="text-xl font-bold mb-4">{title}</h2>
         {children}
         <div className="flex justify-end gap-2 mt-4">

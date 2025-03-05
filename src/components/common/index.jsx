@@ -5,7 +5,7 @@ export { default as Pagination } from "./pagination/Pagination";
 export { default as Select } from "./select/Select";
 export { default as Table } from "./table/Table";
 export { default as Modal } from "./modal/Modal";
-export { default as Avatar } from "./avatar/avatar";
+export { default as Avatar } from "./avatar/Avatar";
 
 export { default as ConfirmModal } from "./modal/ConfirmModal";
 export { default as CreateUserModal } from "./modal/CreateUserModal";
