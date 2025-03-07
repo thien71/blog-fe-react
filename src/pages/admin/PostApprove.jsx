@@ -4,7 +4,7 @@ import {
   Table,
   Pagination,
   EditUserModal,
-  CreatePostModal,
+  CreateUserModal,
   ConfirmModal,
   PostSearchBar,
   CategoryTagTableActions,
@@ -15,7 +15,7 @@ import {
 import useModal from "../../hooks/useModal";
 import usePagination from "../../hooks/usePagination";
 
-const PostManagement = () => {
+const PostApprove = () => {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [authorFilter, setAuthorFilter] = useState("");
@@ -101,7 +101,7 @@ const PostManagement = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
-      <PostManagementHeader />
+      <PostManagementHeader title="Duyệt bài" />
 
       <PostSearchBar
         search={search}
@@ -190,10 +190,10 @@ const PostManagement = () => {
       )}
 
       {isCreateOpen && (
-        <CreatePostModal
+        <CreateUserModal
           isOpen={isCreateOpen}
           onClose={() => closeCreateModal()}
-          // onCreated={handleCreated}
+          onCreated={handleCreated}
         />
       )}
 
@@ -214,4 +214,4 @@ const PostManagement = () => {
   );
 };
 
-export default PostManagement;
+export default PostApprove;

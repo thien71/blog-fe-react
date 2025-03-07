@@ -3,7 +3,6 @@ import { Input, Select } from "../../../components";
 
 import UserAPI from "../../../apis/endpoints/users";
 import CategoryAPI from "../../../apis/endpoints/categories";
-import PostAPI from "../../../apis/endpoints/posts";
 
 const status = [
   { value: "", label: "Trạng thái" },
@@ -25,8 +24,10 @@ const PostSearchbar = ({
   viewMaxFilter,
   setViewMaxFilter,
 }) => {
-  const [categories, setCategories] = useState([]);
-  const [authors, setAuthors] = useState([]);
+  const [categories, setCategories] = useState([
+    { value: "", label: "Danh mục" },
+  ]);
+  const [authors, setAuthors] = useState([{ value: "", label: "Tác giả" }]);
 
   useEffect(() => {
     CategoryAPI.getAll()

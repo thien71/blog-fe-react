@@ -1,7 +1,7 @@
 import { FaSpinner } from "react-icons/fa";
 
 const buttonVariants = {
-  primary: "bg-blue-500 text-white hover:bg-blue-600",
+  primary: "bg-blue-500 text-white hover:bg-blue-600 border border-transparent",
   success: "bg-green-500 text-white hover:bg-green-600",
   danger: "bg-red-500 text-white hover:bg-red-600",
   outline: "border border-gray-500 text-gray-500 hover:bg-gray-100",

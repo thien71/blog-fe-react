@@ -13,6 +13,11 @@ export { default as EditUserModal } from "./users/EditUserModal";
 export { default as PostItem } from "./posts/PostItem";
 export { default as PostsList } from "./posts/PostsList";
 export { default as PostSearchBar } from "./posts/PostSearchBar";
+export { default as PostManagementHeader } from "./posts/PostManagementHeader";
+export { default as CreatePostModal } from "./posts/CreatePostModal";
+// export { default as EditPostModal } from "./posts/EditPostModal";
+export { default as CreatePostForm } from "./posts/CreatePostForm";
+// export { default as EditPostModal } from "./posts/EditPostModal";
 
 // categories
 export { default as CreateCategoryModal } from "./categories/CreateCategoryModal";
@@ -26,3 +31,4 @@ export { default as CategoryTagTableActions } from "./categories_tags/CategoryTa
 // tags
 export { default as CreateTagModal } from "./tags/CreateTagModal";
 export { default as EditTagModal } from "./tags/EditTagModal";
+export { default as TagSelector } from "./tags/TagSelector";

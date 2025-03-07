@@ -10,6 +10,7 @@ const Modal = ({
   size = "sm",
   confirmText = "Lưu",
   cancelText = "Huỷ",
+  className,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -37,12 +38,16 @@ const Modal = ({
     sm: "w-[400px]",
     md: "w-[600px]",
     lg: "w-[800px]",
+    xl: "w-[1000px]",
+    full: "w-full",
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-      <div className={`bg-white p-6 rounded-lg shadow-lg ${sizeClasses[size]}`}>
-        <h2 className="text-xl font-bold mb-4">{title}</h2>
+      <div
+        className={`bg-white p-6 rounded-lg shadow-lg ${sizeClasses[size]} ${className}`}
+      >
+        {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
         {children}
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="outline" onClick={onClose} disabled={loading}>
