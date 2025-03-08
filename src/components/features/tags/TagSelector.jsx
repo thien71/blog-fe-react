@@ -1,66 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { IoIosAddCircleOutline, IoMdClose } from "react-icons/io";
+import { Button, Modal } from "../../common";
+import { FaTags } from "react-icons/fa";
+import useModal from "../../../hooks/useModal";
 
-const TagSelector = ({ tags, onTagsSelected, className }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]);
+const TagSelector = ({
+  tags,
+  onTagsSelected,
+  className,
+  selectedTags = [],
+}) => {
+  const { isOpen, openModal, closeModal } = useModal();
+  const [localSelectedTags, setLocalSelectedTags] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      console.log("Mở modal, selectedTags hiện tại:", selectedTags);
+      setLocalSelectedTags(selectedTags);
+    }
+  }, [isOpen, selectedTags]);
 
   const handleTagToggle = (tag) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    setLocalSelectedTags((prev) => {
+      const isSelected = prev.some((t) => t.value === tag.value);
+      const newTags = isSelected
+        ? prev.filter((t) => t.value !== tag.value)
+        : [...prev, tag];
+
+      onTagsSelected(newTags);
+      return newTags;
+    });
   };
 
-  const handleSubmit = () => {
-    onTagsSelected(selectedTags);
-    setShowModal(false);
+  const handleClearSelection = (e) => {
+    e.preventDefault();
+    setLocalSelectedTags([]);
+  };
+  const handleConfirmSelection = () => {
+    onTagsSelected(localSelectedTags);
+    closeModal();
   };
 
   return (
     <div className={className}>
-      <button
+      <Button
         type="button"
-        onClick={() => setShowModal(true)}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        onClick={openModal}
+        variant="outline"
+        className="group flex gap-2 hover:outline outline-1 outline-blue-300"
       >
-        Gắn tag
-      </button>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-4 rounded-md shadow-md w-1/3">
-            <h2 className="text-lg font-bold mb-4">Chọn Tag</h2>
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {tags.map((tag) => (
-                <label key={tag.value} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    value={tag.value}
-                    checked={selectedTags.includes(tag)}
-                    onChange={() => handleTagToggle(tag)}
-                  />
-                  {tag.label}
-                </label>
-              ))}
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded-md"
-              >
-                Huỷ
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <FaTags size={20} className="transition-all duration-300" />
+        <span>Gắn tag</span>
+      </Button>
 
       <div className="flex gap-2 mt-4 flex-wrap">
         {selectedTags.map((tag) => (
@@ -72,6 +64,51 @@ const TagSelector = ({ tags, onTagsSelected, className }) => {
           </span>
         ))}
       </div>
+
+      <Modal
+        title="Chọn Tag"
+        isOpen={isOpen}
+        onClose={closeModal}
+        cancelText="Đóng"
+        confirmText="Xác nhận"
+        onConfirm={handleConfirmSelection}
+        className={"relative"}
+      >
+        <input
+          type="text"
+          placeholder="Tìm kiếm tag..."
+          className="w-full p-2 border rounded-md mb-2"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <div className="grid grid-cols-2 gap-2 overflow-y-auto max-h-40">
+          {tags
+            .filter((tag) =>
+              tag.label.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((tag) => (
+              <label
+                key={tag.value}
+                className="flex items-center gap-2 p-1 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  value={tag.value}
+                  checked={localSelectedTags.some((t) => t.value === tag.value)}
+                  onChange={() => handleTagToggle(tag)}
+                />
+                {tag.label}
+              </label>
+            ))}
+        </div>
+
+        <div className="absolute top-2 right-6  gap-2 mt-4">
+          <Button size="sm" variant="outline" onClick={handleClearSelection}>
+            Bỏ chọn tất cả
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };

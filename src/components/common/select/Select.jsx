@@ -1,6 +1,6 @@
-const Select = ({ options, value, onChange }) => (
+const Select = ({ options, value, onChange, className }) => (
   <select
-    className="border rounded p-2 w-full focus:outline-none"
+    className={`border rounded p-2 w-full focus:outline-none ${className}`}
     value={value}
     onChange={onChange}
   >

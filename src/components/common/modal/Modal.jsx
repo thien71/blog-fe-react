@@ -11,6 +11,8 @@ const Modal = ({
   confirmText = "Lưu",
   cancelText = "Huỷ",
   className,
+  hideConfirmButton = false,
+  // type = "submit",
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -53,9 +55,16 @@ const Modal = ({
           <Button variant="outline" onClick={onClose} disabled={loading}>
             {cancelText}
           </Button>
-          <Button variant="primary" onClick={handleConfirm} disabled={loading}>
-            {loading ? `Đang ${confirmText}...` : confirmText}
-          </Button>
+          {!hideConfirmButton && (
+            <Button
+              // type={type}
+              variant="primary"
+              onClick={handleConfirm}
+              disabled={loading}
+            >
+              {loading ? `Đang ${confirmText}...` : confirmText}
+            </Button>
+          )}
         </div>
       </div>
     </div>

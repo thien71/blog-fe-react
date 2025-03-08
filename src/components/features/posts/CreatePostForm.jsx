@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   TinyEditorComponent,
   Input,
@@ -7,17 +7,19 @@ import {
   TagSelector,
 } from "../../../components";
 import default_image from "../../../assets/images/default_image.png";
+import { MdOutlineFileUpload } from "react-icons/md";
 
 const CreatePostForm = ({ handleCancel, handleSave, handleSubmit }) => {
   const [loading, setLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
+  // const sidebarRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     category_id: "",
-    tag: "",
+    tag: [],
     thumbnail: null,
   });
 
@@ -53,7 +55,7 @@ const CreatePostForm = ({ handleCancel, handleSave, handleSubmit }) => {
         />
       </div>
       <div className="flex justify-between gap-2">
-        <div className="w-[900px] h-[500px] border-r-4 pr-2">
+        <div className="flex-1 h-[500px] border-r-4 pr-2">
           <div>
             <TinyEditorComponent
               value={formData.content}
@@ -61,40 +63,25 @@ const CreatePostForm = ({ handleCancel, handleSave, handleSubmit }) => {
             />
           </div>
         </div>
-        <div className="flex-1 flex flex-col justify-between h-auto">
-          <div className="grid grid-cols-2 h-fit gap-4">
+        <div
+          id="create-post-sidebar"
+          className="w-[300px] flex flex-col justify-between h-auto"
+        >
+          <div className="flex flex-col gap-4">
             <Select
               options={[
                 { label: "Chọn danh mục", value: "" },
                 { label: "ReactJS", value: "1" },
               ]}
               onChange={(e) => handleChange("category_id", e.target.value)}
+              className={"col-span-1"}
             />
-            {/* <Select
-              options={[
-                { label: "Chọn tag", value: "" },
-                { label: "JavaScript", value: "2" },
-              ]}
-              onChange={(e) => handleChange("tag", e.target.value)}
-            /> */}
-            <TagSelector
-              className="col-span-2"
-              tags={[
-                { label: "JavaScript", value: "2" },
-                { label: "ReactJS", value: "3" },
-                { label: "Laravel", value: "4" },
-              ]}
-              onTagsSelected={(tags) => console.log("Tags đã chọn:", tags)}
-            />
-
-            <div className="w-full col-span-1 flex flex-col gap-4">
-              {/* {thumbnailPreview && ( */}
+            <div className="flex gap-4 justify-between items-center pb-4 border-b-2">
               <img
                 src={thumbnailPreview || default_image}
                 alt="Thumbnail preview"
-                className="w-full object-cover aspect-[5/3] rounded-lg border"
+                className="w-1/2 object-cover aspect-[5/3] rounded-lg border"
               />
-              {/* )} */}
 
               <Input
                 type="file"
@@ -106,13 +93,27 @@ const CreatePostForm = ({ handleCancel, handleSave, handleSubmit }) => {
 
               <label
                 htmlFor="thumbnailInput"
-                className="cursor-pointer bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600 transition"
+                variant="primary"
+                type="button"
+                className="text-sm px-2 cursor-pointer bg-blue-500 text-white text-center py-2 rounded-lg 
+                hover:bg-blue-600 transition whitespace-nowrap"
               >
-                Chọn ảnh
+                <span>Upload ảnh</span>
               </label>
             </div>
+
+            <TagSelector
+              className=""
+              tags={[
+                { label: "JavaScript", value: "2" },
+                { label: "ReactJS", value: "3" },
+                { label: "Laravel", value: "4" },
+              ]}
+              selectedTags={formData.tag} // Truyền tag đã chọn xuống
+              onTagsSelected={(tags) => handleChange("tag", tags)}
+            />
           </div>
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="flex justify-end gap-2 pt-4 border-t-2">
             <Button variant="outline" onClick={handleCancel} disabled={loading}>
               Huỷ
             </Button>

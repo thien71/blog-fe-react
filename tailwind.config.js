@@ -9,7 +9,18 @@ export default {
         summary: "#4f4f4f",
         views: "#076DB6",
         hover: "#087cce",
+        // button: {
+        //   primary: {
+        //     background: "rgb(59 130 246)",
+        //     color: "#ffffff",
+        //   },
+        //   secondary: {
+        //     background: "#ffffff",
+        //     color: "rgb(59 130 246)",
+        //   },
+        // },
       },
+
       fontFamily: {
         title: ["Merriweather", "serif"],
         summary: ["Arial", "sans-serif"],
