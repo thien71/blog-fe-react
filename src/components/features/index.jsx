@@ -15,9 +15,10 @@ export { default as PostsList } from "./posts/PostsList";
 export { default as PostSearchBar } from "./posts/PostSearchBar";
 export { default as PostManagementHeader } from "./posts/PostManagementHeader";
 export { default as CreatePostModal } from "./posts/CreatePostModal";
-// export { default as EditPostModal } from "./posts/EditPostModal";
+
 export { default as CreatePostForm } from "./posts/CreatePostForm";
-// export { default as EditPostModal } from "./posts/EditPostModal";
+export { default as CreatePostActions } from "./posts/CreatePostActions";
+export { default as CreatePostSidebar } from "./posts/create/CreatePostSidebar";
 
 // categories
 export { default as CreateCategoryModal } from "./categories/CreateCategoryModal";
