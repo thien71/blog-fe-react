@@ -67,13 +67,8 @@ const CreatePostSidebar = ({
               }))
             : []
         }
-        // selectedTags={formData.tag}
         selectedTags={formData.tag || []}
-        // onTagsSelected={(tags) => handleChange("tag", tags)}
-        onTagsSelected={(tags) => {
-          console.log("🟠 Tags được truyền vào CreatePostSidebar:", tags);
-          handleChange("tag", tags);
-        }}
+        onTagsSelected={(tags) => handleChange("tag", tags)}
         disabled={loadingTags}
       />
     </div>

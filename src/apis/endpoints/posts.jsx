@@ -3,15 +3,34 @@ import api from "../index";
 const PostAPI = {
   getAll: () => api.get("/posts"),
   getBySlug: (slug) => api.get(`/posts/${slug}`),
-  // create: (postData) => api.post("/posts", postData),
+  getById: (id) => api.get(`/posts/${id}`),
   create: (postData) =>
     api.post(`/posts`, postData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     }),
-  update: (id, postData) => api.put(`/posts/${id}`, postData),
+  update: (id, postData) =>
+    api.post(`/posts/${id}`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  updateDraft: (id, postData) =>
+    api.post(`/posts/${id}/draft?_method=PUT`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  submitPost: (id, postData) =>
+    api.post(`/posts/${id}/submit?_method=PUT`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+
   delete: (id) => api.delete(`/posts/${id}`),
+  forceDelete: (id) => api.delete(`/posts/${id}/force`),
   getByAuthor: (authorId) => api.get(`/posts/author/${authorId}`),
   getLatest: (limit) =>
     api.get(limit ? `/posts/latest?limit=${limit}` : "/posts/latest"),

@@ -15,6 +15,28 @@ const TinyEditorComponent = ({ value, onChange }) => {
     }
   };
 
+  const handleImageUpload = (blobInfo) => {
+    return new Promise((resolve) => {
+      const file = blobInfo.blob();
+      const tempUrl = URL.createObjectURL(file);
+      resolve(tempUrl);
+    });
+  };
+
+  const extractImagesFromContent = () => {
+    if (!editorRef.current) return [];
+
+    let content = editorRef.current.getContent();
+    const imgTags = content.match(/<img[^>]+src="([^">]+)"/g) || [];
+
+    return imgTags.map((tag) => tag.match(/src="([^">]+)"/)?.[1]);
+  };
+
+  const handleCheckImages = () => {
+    const images = extractImagesFromContent();
+    console.log("🖼 Danh sách ảnh Blob:", images);
+  };
+
   return (
     <div>
       <Editor
@@ -52,31 +74,14 @@ const TinyEditorComponent = ({ value, onChange }) => {
             "undo redo blocks fontselect fontsizeselect bold italic underline forecolor image media link alignleft aligncenter alignright alignjustify bullist numlist outdent indent removeformat help",
           content_style:
             "body { font-family:Merriweather,Arial,serif; font-size:16px }",
-          // images_upload_url: "/upload-image", // API upload ảnh (backend Laravel xử lý)
-          images_upload_handler: function (blobInfo, success, failure) {
-            const formData = new FormData();
-            formData.append("file", blobInfo.blob());
-
-            fetch("/api/upload-image", {
-              method: "POST",
-              body: formData,
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.url) {
-                  success(data.url); // Trả về đường dẫn ảnh sau khi upload thành công
-                } else {
-                  failure("Upload failed");
-                }
-              })
-              .catch(() => {
-                failure("Upload error");
-              });
-          },
+          images_upload_handler: handleImageUpload,
         }}
       />
       <button type="button" onClick={log}>
         Log editor content
+      </button>
+      <button type="button" onClick={handleCheckImages}>
+        📸 Kiểm tra ảnh
       </button>
     </div>
   );

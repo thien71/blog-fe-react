@@ -23,7 +23,7 @@ const AdminRoutes = [
           { path: "categories", element: <CategoryManagement /> },
           { path: "posts", element: <PostManagement /> },
           { path: "posts/approve", element: <PostApprove /> },
-          { path: "posts/create", element: <CreatePost /> },
+          { path: "posts/edit/:id", element: <CreatePost /> },
         ],
       },
     ],

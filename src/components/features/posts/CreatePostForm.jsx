@@ -4,17 +4,22 @@ import {
   Input,
   CreatePostActions,
   CreatePostSidebar,
+  ConfirmModal,
 } from "../../../components";
-import { useNavigate } from "react-router-dom";
-import UserAPI from "../../../apis/endpoints/users";
-import useFetchAPI from "../../../hooks/useFetchAPI";
+import { useNavigate, useParams } from "react-router-dom";
 import PostAPI from "../../../apis/endpoints/posts";
+import useModal from "../../../hooks/useModal";
 
 const CreatePostForm = () => {
-  const [loading, setLoading] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
-  const navigate = useNavigate();
+  const [originalData, setOriginalData] = useState(null);
+  const { isOpen, selectedItem, openModal, closeModal } = useModal();
+  const [hasEdited, setHasEdited] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -24,13 +29,57 @@ const CreatePostForm = () => {
     thumbnail: null,
   });
 
+  useEffect(() => {
+    if (id) {
+      // const fetchPost = async () => {
+      //   try {
+      //     const response = await PostAPI.getById(id);
+      //     const postData = response.data?.data;
+      //     const initialFormData = {
+      //       title: postData.title,
+      //       content: postData.content,
+      //       category_id: postData.category.id,
+      //       tag: postData.tags.map((tag) => ({
+      //         label: tag,
+      //       })),
+      //       thumbnail: null,
+      //     };
+      //     setFormData(initialFormData);
+      //     setOriginalData(initialFormData); // Lưu trạng thái ban đầu
+      //     setThumbnailPreview(postData.thumbnail);
+      //   } catch (error) {
+      //     console.error("Lỗi khi lấy bài viết:", error);
+      //   }
+      // };
+      // fetchPost();
+    } else {
+      setOriginalData({
+        title: "",
+        content: "",
+        category_id: "",
+        tag: [],
+        thumbnail: null,
+      });
+    }
+  }, [id]);
+
+  const isFormChanged = () => {
+    if (!hasEdited) return false;
+    return (
+      JSON.stringify(formData) !== JSON.stringify(originalData) ||
+      thumbnail !== null
+    );
+  };
+
   const handleChange = (name, value) => {
+    setHasEdited(true);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      setHasEdited(true);
       setThumbnail(selectedFile);
       handleChange("thumbnail", selectedFile);
 
@@ -42,16 +91,63 @@ const CreatePostForm = () => {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (originalData === null) {
+      try {
+        await PostAPI.forceDelete(id);
+        navigate(-1);
+      } catch (error) {
+        console.error("Lỗi khi xóa bài viết:", error);
+      }
+      return;
+    }
+
+    if (
+      !hasEdited &&
+      originalData &&
+      !originalData.title &&
+      !originalData.content
+    ) {
+      try {
+        await PostAPI.forceDelete(id);
+        navigate(-1);
+      } catch (error) {
+        console.error("Lỗi khi xóa bài viết:", error);
+      }
+      return;
+    }
+
+    if (isFormChanged()) {
+      openModal();
+      return;
+    }
+
     navigate(-1);
   };
-  const handleSave = () => {};
-  const handleSubmit = async () => {
-    setLoading(true);
-    console.log("Xem formdata trước try catch", formData);
+
+  const handleExitWithoutSaving = () => {
+    closeModal();
+    if (originalData && !originalData.title && !originalData.content) {
+      PostAPI.forceDelete(id)
+        .catch((error) => console.error("Lỗi khi xóa bài viết:", error))
+        .finally(() => navigate(-1));
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSaveAndExit = async () => {
+    await handleSave();
+    closeModal();
+    navigate(-1);
+  };
+
+  const handleSave = async () => {
+    setSaveLoading(true);
 
     try {
       const formDataToSend = new FormData();
+      formDataToSend.append("_method", "PUT");
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
       formDataToSend.append("category_id", formData.category_id);
@@ -64,9 +160,44 @@ const CreatePostForm = () => {
         formDataToSend.append("thumbnail", thumbnail);
       }
 
-      const response = await PostAPI.create(formDataToSend);
+      const response = await PostAPI.updateDraft(id, formDataToSend);
 
-      if (response.status === 201) {
+      if (response.data?.data) {
+        const savedData = { ...formData };
+        setOriginalData(savedData);
+        setHasEdited(false);
+        setThumbnail(null);
+      } else {
+        throw new Error("Đã có lỗi xảy ra!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo bài viết:", error);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setSubmitLoading(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("_method", "PUT");
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("content", formData.content);
+      formDataToSend.append("category_id", formData.category_id);
+
+      formData.tag.forEach((tag) => {
+        formDataToSend.append("tags[]", tag.value);
+      });
+
+      if (thumbnail) {
+        formDataToSend.append("thumbnail", thumbnail);
+      }
+
+      const response = await PostAPI.submitPost(id, formDataToSend);
+
+      if (response.data?.data) {
         navigate("/admin/posts");
       } else {
         throw new Error("Đã có lỗi xảy ra!");
@@ -74,7 +205,7 @@ const CreatePostForm = () => {
     } catch (error) {
       console.error("Lỗi khi tạo bài viết:", error);
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -109,11 +240,25 @@ const CreatePostForm = () => {
             handleCancel={handleCancel}
             handleSave={handleSave}
             handleSubmit={handleSubmit}
-            loading={loading}
+            saveLoading={saveLoading}
+            submitLoading={submitLoading}
             className=""
           />
         </div>
       </div>
+
+      {isOpen && (
+        <ConfirmModal
+          isOpen={isOpen}
+          title="Bạn có chắc muốn thoát"
+          message="Bài viết chưa được lưu. Bạn muốn lưu lại trước khi rời đi?"
+          onCancel={handleExitWithoutSaving}
+          onConfirm={handleSaveAndExit}
+          confirmVariant="success"
+          confirmText="Lưu & Thoát"
+          cancelText="Thoát"
+        />
+      )}
     </form>
   );
 };

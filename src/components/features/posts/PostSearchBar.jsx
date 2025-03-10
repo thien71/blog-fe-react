@@ -39,7 +39,6 @@ const PostSearchbar = ({
             label: category.name,
           })),
         ];
-        console.log("Category: " + response.data);
 
         setCategories(categoryOptions);
       })

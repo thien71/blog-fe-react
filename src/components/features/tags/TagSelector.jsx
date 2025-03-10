@@ -23,7 +23,7 @@ const TagSelector = ({
 
   useEffect(() => {
     if (isOpen) {
-      console.log("Mở modal, selectedTags hiện tại:", selectedTags);
+      // console.log("Mở modal, selectedTags hiện tại:", selectedTags);
       setLocalSelectedTags((prev) => {
         if (JSON.stringify(prev) !== JSON.stringify(selectedTags)) {
           return selectedTags;

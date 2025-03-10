@@ -4,7 +4,8 @@ const CreatePostActions = ({
   handleCancel,
   handleSave,
   handleSubmit,
-  loading,
+  saveLoading,
+  submitLoading,
   className,
 }) => {
   return (
@@ -13,20 +14,25 @@ const CreatePostActions = ({
         type="button"
         variant="outline"
         onClick={handleCancel}
-        disabled={loading}
+        disabled={saveLoading || submitLoading}
       >
-        Huỷ
+        Thoát
       </Button>
-      <Button variant="primary" onClick={handleSave} disabled={loading}>
-        {loading ? `Đang lưu` : "Lưu"}
+      <Button
+        type="button"
+        variant="primary"
+        onClick={handleSave}
+        disabled={saveLoading || submitLoading}
+      >
+        {saveLoading ? `⌛` : "Lưu"}
       </Button>
       <Button
         type="button"
         variant="primary"
         onClick={handleSubmit}
-        disabled={loading}
+        disabled={saveLoading || submitLoading}
       >
-        {loading ? `Đang gửi` : "Gửi"}
+        {submitLoading ? `⌛` : "Gửi"}
       </Button>
     </div>
   );
