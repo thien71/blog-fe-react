@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PostAPI from "../../apis/endpoints/posts";
+import PostAPI from "../../../apis/endpoints/posts";
 import {
   Table,
   Pagination,
@@ -10,10 +10,10 @@ import {
   CategoryTagTableActions,
   Button,
   PostManagementHeader,
-} from "../../components";
+} from "../../../components";
 
-import useModal from "../../hooks/useModal";
-import usePagination from "../../hooks/usePagination";
+import useModal from "../../../hooks/useModal";
+import usePagination from "../../../hooks/usePagination";
 
 const PostManagement = () => {
   const [search, setSearch] = useState("");
@@ -79,7 +79,7 @@ const PostManagement = () => {
   const {
     currentPage: page,
     setCurrentPage: setPage,
-    paginatedData: paginatedUsers,
+    paginatedData: paginatedPosts,
     totalItems,
     itemsPerPage,
   } = usePagination(filteredPosts, 5);
@@ -133,29 +133,29 @@ const PostManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map((user) => (
-            <tr key={user.id} className="text-center">
-              <td className="border p-2">{user.id}</td>
+          {paginatedPosts.map((post) => (
+            <tr key={post.id} className="text-center">
+              <td className="border p-2">{post.id}</td>
               <td className="border p-2 max-w-20">
                 <img
-                  src={user.thumbnail || "https://placehold.co/80x48"}
-                  alt={user.title}
+                  src={post.thumbnail || "https://placehold.co/80x48"}
+                  alt={post.title}
                   className="aspect-[5/3] object-cover w-full bg-gray-300 rounded-md"
                 />
               </td>
               <td className="border p-2 text-left max-w-sm">
-                <p className="line-clamp-2">{user.title}</p>
+                <p className="line-clamp-2">{post.title}</p>
               </td>
-              <td className="border p-2">{user.category.name}</td>
+              <td className="border p-2">{post.category.name}</td>
               <td className="border p-2 min-w-40">
-                <p className="">{user.author.name}</p>
+                <p className="">{post.author.name}</p>
               </td>
               <td className="border p-2 max-w-28">
-                <p className="">{user.created_at}</p>
+                <p className="">{post.created_at}</p>
               </td>
-              <td className="border p-2">{user.views}</td>
+              <td className="border p-2">{post.views}</td>
               <td className="border p-2">
-                {user.status === "published" ? (
+                {post.status === "published" ? (
                   <span className="text-green-500">Công khai</span>
                 ) : (
                   <span className="text-red-500">Đã ẩn</span>
@@ -163,7 +163,7 @@ const PostManagement = () => {
               </td>
               <td className="border p-2">
                 <CategoryTagTableActions
-                  data={user}
+                  data={post}
                   onEdit={openEditModal}
                   onConfirm={openConfirmModal}
                 />

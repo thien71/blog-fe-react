@@ -31,27 +31,27 @@ const CreatePostForm = () => {
 
   useEffect(() => {
     if (id) {
-      // const fetchPost = async () => {
-      //   try {
-      //     const response = await PostAPI.getById(id);
-      //     const postData = response.data?.data;
-      //     const initialFormData = {
-      //       title: postData.title,
-      //       content: postData.content,
-      //       category_id: postData.category.id,
-      //       tag: postData.tags.map((tag) => ({
-      //         label: tag,
-      //       })),
-      //       thumbnail: null,
-      //     };
-      //     setFormData(initialFormData);
-      //     setOriginalData(initialFormData); // Lưu trạng thái ban đầu
-      //     setThumbnailPreview(postData.thumbnail);
-      //   } catch (error) {
-      //     console.error("Lỗi khi lấy bài viết:", error);
-      //   }
-      // };
-      // fetchPost();
+      const fetchPost = async () => {
+        try {
+          const response = await PostAPI.getById(id);
+          const postData = response.data?.data;
+          const initialFormData = {
+            title: postData.title,
+            content: postData.content,
+            category_id: postData.category.id,
+            tag: postData.tags.map((tag) => ({
+              label: tag,
+            })),
+            thumbnail: null,
+          };
+          setFormData(initialFormData);
+          setOriginalData(initialFormData);
+          setThumbnailPreview(postData.thumbnail);
+        } catch (error) {
+          console.error("Lỗi khi lấy bài viết:", error);
+        }
+      };
+      fetchPost();
     } else {
       setOriginalData({
         title: "",

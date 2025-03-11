@@ -3,7 +3,9 @@ import api from "../index";
 const PostAPI = {
   getAll: () => api.get("/posts"),
   getBySlug: (slug) => api.get(`/posts/${slug}`),
-  getById: (id) => api.get(`/posts/${id}`),
+  getById: (id) => api.get(`/posts/id/${id}`),
+  getDraft: () => api.get(`/posts/draft/me`),
+  getPending: () => api.get(`/admin/posts/pending`),
   create: (postData) =>
     api.post(`/posts`, postData, {
       headers: {
@@ -28,6 +30,8 @@ const PostAPI = {
         "Content-Type": "multipart/form-data",
       },
     }),
+  approve: (id) => api.put(`/posts/${id}/approve`),
+  reject: (id) => api.put(`/posts/${id}/reject`),
 
   delete: (id) => api.delete(`/posts/${id}`),
   forceDelete: (id) => api.delete(`/posts/${id}/force`),
