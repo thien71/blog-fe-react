@@ -87,6 +87,10 @@ const PostApprove = () => {
         setCategoryFilter={setCategoryFilter}
         authorFilter={authorFilter}
         setAuthorFilter={setAuthorFilter}
+        visibleFilters={{
+          category: true,
+          author: true,
+        }}
       />
 
       <Table>

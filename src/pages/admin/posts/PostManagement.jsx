@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import vi from "date-fns/locale/vi";
 import PostAPI from "../../../apis/endpoints/posts";
+import UserAPI from "../../../apis/endpoints/users";
 import {
   Table,
   Pagination,
@@ -8,7 +11,6 @@ import {
   ConfirmModal,
   PostSearchBar,
   CategoryTagTableActions,
-  Button,
   PostManagementHeader,
 } from "../../../components";
 
@@ -23,6 +25,8 @@ const PostManagement = () => {
   const [viewMinFilter, setViewMinFilter] = useState("");
   const [viewMaxFilter, setViewMaxFilter] = useState("");
   const [posts, setPosts] = useState([]);
+  const [role, setRole] = useState("");
+  const [userId, setUserId] = useState(null);
 
   const {
     isOpen: isEditOpen,
@@ -45,24 +49,19 @@ const PostManagement = () => {
   } = useModal();
 
   const filteredPosts = posts.filter((post) => {
-    // Lọc theo từ khóa tìm kiếm
     const matchesSearch =
       !search ||
       post.title.toLowerCase().includes(search.toLowerCase()) ||
       post.summary.toLowerCase().includes(search.toLowerCase());
 
-    // Lọc theo danh mục
     const matchesCategory =
       !categoryFilter || post.category.id === Number(categoryFilter);
 
-    // Lọc theo tác giả
     const matchesAuthor =
       !authorFilter || post.author.id === Number(authorFilter);
 
-    // Lọc theo trạng thái
     const matchesStatus = !statusFilter || post.status === statusFilter;
 
-    // Lọc theo lượt xem
     const matchesViews =
       (!viewMinFilter || post.views >= Number(viewMinFilter)) &&
       (!viewMaxFilter || post.views <= Number(viewMaxFilter));
@@ -84,10 +83,27 @@ const PostManagement = () => {
     itemsPerPage,
   } = usePagination(filteredPosts, 5);
 
-  const fetchUsers = async () => {
+  const fetchUserRole = async () => {
     try {
-      const response = await PostAPI.getAll();
-      if (response.data.data?.length) {
+      const response = await UserAPI.getCurrentUser();
+      setRole(response.data?.data.role || "author");
+      setUserId(response.data?.data.id);
+    } catch (error) {
+      console.error("Lỗi khi lấy role:", error);
+      setRole("author");
+    }
+  };
+
+  const fetchPosts = async () => {
+    try {
+      let response;
+      if (role === "admin") {
+        response = await PostAPI.getAll();
+      } else if (role === "author" && userId) {
+        response = await PostAPI.getByAuthor(userId);
+      }
+
+      if (response?.data?.data?.length) {
         setPosts(response.data.data);
       }
     } catch (error) {
@@ -96,8 +112,12 @@ const PostManagement = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUserRole();
   }, []);
+
+  useEffect(() => {
+    if (role) fetchPosts();
+  }, [role, userId]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
@@ -151,7 +171,11 @@ const PostManagement = () => {
                 <p className="">{post.author.name}</p>
               </td>
               <td className="border p-2 max-w-28">
-                <p className="">{post.created_at}</p>
+                <p className="">
+                  {format(new Date(post.created_at), "dd/MM/yyyy", {
+                    locale: vi,
+                  })}
+                </p>
               </td>
               <td className="border p-2">{post.views}</td>
               <td className="border p-2">
@@ -180,24 +204,7 @@ const PostManagement = () => {
         onPageChange={setPage}
       />
 
-      {isEditOpen && (
-        <EditUserModal
-          isOpen={isEditOpen}
-          user={selectedUser}
-          onClose={() => closeEditModal()}
-          onUpdated={handleUpdated}
-        />
-      )}
-
-      {isCreateOpen && (
-        <CreatePostModal
-          isOpen={isCreateOpen}
-          onClose={() => closeCreateModal()}
-          // onCreated={handleCreated}
-        />
-      )}
-
-      {isConfirmOpen && (
+      {/* {isConfirmOpen && (
         <ConfirmModal
           isOpen={isConfirmOpen}
           title={`Xác nhận ${
@@ -209,7 +216,7 @@ const PostManagement = () => {
           onConfirm={handleConfirmAction}
           onCancel={() => closeConfirmModal()}
         />
-      )}
+      )} */}
     </div>
   );
 };

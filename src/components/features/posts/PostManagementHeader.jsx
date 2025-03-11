@@ -1,36 +1,49 @@
 import { useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { BsNewspaper } from "react-icons/bs";
-import { Button } from "../../../components";
 import { FaTasks } from "react-icons/fa";
+import { RiDraftLine } from "react-icons/ri";
+import { IoIosRemoveCircle } from "react-icons/io";
+import { Button } from "../../../components";
 import { useNavigate } from "react-router-dom";
 import PostAPI from "../../../apis/endpoints/posts";
-import { RiDraftLine } from "react-icons/ri";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const PostManagementHeader = ({ title = "Quản lí bài viết" }) => {
   const [active, setActive] = useState(title);
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  if (loading) return <p>Loading...</p>;
+
+  const role = user?.role || "author";
+
+  const basePath = role === "admin" ? "/admin/posts" : "/author/posts";
 
   const buttons = [
     {
       label: "Các bản nháp",
       icon: <RiDraftLine size={20} />,
-      path: "/admin/posts/draft",
+      path: `${basePath}/draft`,
     },
     {
-      label: "Duyệt bài",
-      icon: <FaTasks size={20} />,
-      path: "/admin/posts/approve",
+      label: role === "admin" ? "Duyệt bài" : "Bị từ chối",
+      icon:
+        role === "admin" ? (
+          <FaTasks size={20} />
+        ) : (
+          <IoIosRemoveCircle size={20} />
+        ),
+      path: role === "admin" ? `${basePath}/approve` : `${basePath}/reject`,
     },
     {
       label: "Quản lí bài viết",
       icon: <BsNewspaper size={20} />,
-      path: "/admin/posts",
+      path: basePath,
     },
     {
       label: "Viết bài",
       icon: <FaPenToSquare size={20} />,
-      // path: `/admin/posts/edit/${postId}`,
       isCreatePost: true,
     },
   ];
@@ -40,12 +53,9 @@ const PostManagementHeader = ({ title = "Quản lí bài viết" }) => {
 
     if (btn.isCreatePost) {
       try {
-        const response = await PostAPI.create({
-          title: "",
-        });
+        const response = await PostAPI.create({ title: "" });
         const postId = response.data?.data?.id;
-
-        navigate(`/admin/posts/edit/${postId}`);
+        navigate(`${basePath}/edit/${postId}`);
       } catch (error) {
         console.error("Lỗi tạo bài viết:", error);
       }

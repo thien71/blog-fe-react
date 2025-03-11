@@ -23,6 +23,7 @@ const PostSearchbar = ({
   setViewMinFilter,
   viewMaxFilter,
   setViewMaxFilter,
+  visibleFilters = { category: true, author: true, status: true, views: true },
 }) => {
   const [categories, setCategories] = useState([
     { value: "", label: "Danh mục" },
@@ -30,58 +31,66 @@ const PostSearchbar = ({
   const [authors, setAuthors] = useState([{ value: "", label: "Tác giả" }]);
 
   useEffect(() => {
-    CategoryAPI.getAll()
-      .then((response) => {
-        const categoryOptions = [
-          { value: "", label: "Danh mục" },
-          ...response.data.data.map((category) => ({
-            value: category.id,
-            label: category.name,
-          })),
-        ];
-
-        setCategories(categoryOptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-
-    UserAPI.getAll()
-      .then((response) => {
-        const authorOptions = [
-          { value: "", label: "Tác giả" },
-          ...response.data.data
-            .filter((user) => user.role === "author")
-            .map((author) => ({
-              value: author.id,
-              label: author.name || author.email,
+    if (visibleFilters.category) {
+      CategoryAPI.getAll()
+        .then((response) => {
+          setCategories([
+            { value: "", label: "Danh mục" },
+            ...response.data.data.map((category) => ({
+              value: category.id,
+              label: category.name,
             })),
-        ];
-        setAuthors(authorOptions);
-      })
-      .catch((error) => {
-        console.error("Error fetching authors:", error);
-      });
-  }, []);
+          ]);
+        })
+        .catch((error) => console.error("Error fetching categories:", error));
+    }
+
+    if (visibleFilters.author) {
+      UserAPI.getAll()
+        .then((response) => {
+          setAuthors([
+            { value: "", label: "Tác giả" },
+            ...response.data.data
+              .filter((user) => user.role === "author")
+              .map((author) => ({
+                value: author.id,
+                label: author.name || author.email,
+              })),
+          ]);
+        })
+        .catch((error) => console.error("Error fetching authors:", error));
+    }
+  }, [visibleFilters]);
 
   return (
-    <div className="grid grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      {/* Ô tìm kiếm */}
       <Input
         placeholder="Tìm kiếm bài viết..."
         value={search}
         onChange={onSearchChange}
       />
-      <Select
-        options={categories}
-        value={categoryFilter}
-        onChange={(e) => setCategoryFilter(e.target.value)}
-      />
-      <Select
-        options={authors}
-        value={authorFilter}
-        onChange={(e) => setAuthorFilter(e.target.value)}
-      />
-      {statusFilter && (
+
+      {/* Bộ lọc danh mục */}
+      {visibleFilters.category && (
+        <Select
+          options={categories}
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        />
+      )}
+
+      {/* Bộ lọc tác giả */}
+      {visibleFilters.author && (
+        <Select
+          options={authors}
+          value={authorFilter}
+          onChange={(e) => setAuthorFilter(e.target.value)}
+        />
+      )}
+
+      {/* Bộ lọc trạng thái */}
+      {visibleFilters.status && (
         <Select
           options={status}
           value={statusFilter}
@@ -89,7 +98,8 @@ const PostSearchbar = ({
         />
       )}
 
-      {viewMinFilter && (
+      {/* Bộ lọc lượt xem */}
+      {visibleFilters.views && (
         <div className="flex gap-1 items-center justify-center border px-2">
           <span className="inline-block text-left">Lượt xem</span>
           <input
@@ -98,7 +108,7 @@ const PostSearchbar = ({
             value={viewMinFilter}
             onChange={(e) => setViewMinFilter(e.target.value)}
             min="0"
-            className="placeholder:italic outline-none p-1 rounded flex-1 w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="outline-none p-1 rounded flex-1 w-full text-center"
           />
           <span className="inline-block text-center text-sm">đến</span>
           <input
@@ -107,7 +117,7 @@ const PostSearchbar = ({
             value={viewMaxFilter}
             onChange={(e) => setViewMaxFilter(e.target.value)}
             min="0"
-            className="placeholder:italic outline-none p-1 rounded flex-1 w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="outline-none p-1 rounded flex-1 w-full text-center"
           />
         </div>
       )}

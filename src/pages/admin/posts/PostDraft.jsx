@@ -31,7 +31,7 @@ const PostDraft = () => {
   const {
     currentPage: page,
     setCurrentPage: setPage,
-    paginatedData: paginatedUsers,
+    paginatedData: paginatedPosts,
     totalItems,
     itemsPerPage,
   } = usePagination(filteredPosts, 5);
@@ -52,7 +52,9 @@ const PostDraft = () => {
   }, []);
 
   const handleEdit = () => {
-    navigate(`/admin/posts/edit/${paginatedUsers[page - 1].id}`);
+    const userRole = localStorage.getItem("role");
+    const basePath = userRole === "admin" ? "/admin" : "/author";
+    navigate(`${basePath}/posts/edit/${paginatedPosts[page - 1].id}`);
   };
 
   return (
@@ -80,26 +82,26 @@ const PostDraft = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map((user) => (
-            <tr key={user.id} className="text-center">
-              <td className="border p-2">{user.id}</td>
+          {paginatedPosts.map((post) => (
+            <tr key={post.id} className="text-center">
+              <td className="border p-2">{post.id}</td>
               <td className="border p-2 max-w-20">
                 <img
-                  src={user.thumbnail || "https://placehold.co/80x48"}
-                  alt={user.title}
+                  src={post.thumbnail || "https://placehold.co/80x48"}
+                  alt={post.title}
                   className="aspect-[5/3] object-cover w-full bg-gray-300 rounded-md"
                 />
               </td>
               <td className="border p-2 text-left max-w-sm">
-                <p className="line-clamp-2">{user.title}</p>
+                <p className="line-clamp-2">{post.title}</p>
               </td>
-              <td className="border p-2">{user.category.name}</td>
+              <td className="border p-2">{post?.category?.name}</td>
               <td className="border p-2 min-w-40">
-                <p className="">{user.author.name}</p>
+                <p className="">{post?.author?.name}</p>
               </td>
               <td className="border p-2 max-w-28">
                 <p className="">
-                  {format(new Date(user.created_at), "dd/MM/yyyy", {
+                  {format(new Date(post.created_at), "dd/MM/yyyy", {
                     locale: vi,
                   })}
                 </p>
