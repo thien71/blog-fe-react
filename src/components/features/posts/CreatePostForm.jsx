@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   TinyEditorComponent,
   Input,
@@ -9,6 +9,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import PostAPI from "../../../apis/endpoints/posts";
 import useModal from "../../../hooks/useModal";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const CreatePostForm = () => {
   const { id } = useParams();
@@ -20,6 +21,12 @@ const CreatePostForm = () => {
   const [originalData, setOriginalData] = useState(null);
   const { isOpen, selectedItem, openModal, closeModal } = useModal();
   const [hasEdited, setHasEdited] = useState(false);
+  const [post, setPost] = useState({ id: id || null });
+
+  console.log("Log thử id useParams:", id);
+  console.log("Log thử post.id:", post.id);
+
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -30,50 +37,57 @@ const CreatePostForm = () => {
   });
 
   useEffect(() => {
-    if (id) {
-      const fetchPost = async () => {
-        try {
-          const response = await PostAPI.getById(id);
-          const postData = response.data?.data;
-          const initialFormData = {
-            title: postData.title,
-            content: postData.content,
-            category_id: postData.category.id,
-            tag: postData.tags.map((tag) => ({
-              label: tag,
-            })),
-            thumbnail: null,
-          };
-          setFormData(initialFormData);
-          setOriginalData(initialFormData);
-          setThumbnailPreview(postData.thumbnail);
-        } catch (error) {
-          console.error("Lỗi khi lấy bài viết:", error);
-        }
-      };
-      fetchPost();
-    } else {
-      setOriginalData({
-        title: "",
-        content: "",
-        category_id: "",
-        tag: [],
-        thumbnail: null,
-      });
-    }
+    if (!id) return;
+
+    let isMounted = true;
+
+    const fetchPost = async () => {
+      try {
+        const response = await PostAPI.getById(id);
+        if (!isMounted) return;
+        const postData = response.data?.data;
+        setFormData({
+          title: postData.title,
+          content: postData.content,
+          category_id: postData.category.id,
+          // tag: postData.tags.map((tag) => ({ label: tag })),
+          // tag: postData.tags.map((tag) => ({ label: tag, value: tag })),
+          tag: postData.tags.map((tag) => ({ label: tag.name, value: tag.id })),
+          thumbnail: null,
+        });
+        setOriginalData({
+          title: postData.title,
+          content: postData.content,
+          category_id: postData.category.id,
+          // tag: postData.tags.map((tag) => ({ label: tag })),
+          tag: postData.tags.map((tag) => ({ label: tag, value: tag })), // Sửa lỗi
+          thumbnail: null,
+        });
+        setThumbnailPreview(postData.thumbnail);
+      } catch (error) {
+        console.error("Lỗi khi lấy bài viết:", error);
+      }
+    };
+
+    fetchPost();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const isFormChanged = () => {
-    if (!hasEdited) return false;
     return (
-      JSON.stringify(formData) !== JSON.stringify(originalData) ||
-      thumbnail !== null
+      hasEdited && JSON.stringify(formData) !== JSON.stringify(originalData)
     );
   };
 
   const handleChange = (name, value) => {
     setHasEdited(true);
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      if (prev[name] === value) return prev;
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleFileChange = (e) => {
@@ -92,31 +106,6 @@ const CreatePostForm = () => {
   };
 
   const handleCancel = async () => {
-    if (originalData === null) {
-      try {
-        await PostAPI.forceDelete(id);
-        navigate(-1);
-      } catch (error) {
-        console.error("Lỗi khi xóa bài viết:", error);
-      }
-      return;
-    }
-
-    if (
-      !hasEdited &&
-      originalData &&
-      !originalData.title &&
-      !originalData.content
-    ) {
-      try {
-        await PostAPI.forceDelete(id);
-        navigate(-1);
-      } catch (error) {
-        console.error("Lỗi khi xóa bài viết:", error);
-      }
-      return;
-    }
-
     if (isFormChanged()) {
       openModal();
       return;
@@ -127,13 +116,7 @@ const CreatePostForm = () => {
 
   const handleExitWithoutSaving = () => {
     closeModal();
-    if (originalData && !originalData.title && !originalData.content) {
-      PostAPI.forceDelete(id)
-        .catch((error) => console.error("Lỗi khi xóa bài viết:", error))
-        .finally(() => navigate(-1));
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   const handleSaveAndExit = async () => {
@@ -147,7 +130,11 @@ const CreatePostForm = () => {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("_method", "PUT");
+
+      if (post.id) {
+        formDataToSend.append("_method", "PUT");
+      }
+
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
       formDataToSend.append("category_id", formData.category_id);
@@ -160,7 +147,26 @@ const CreatePostForm = () => {
         formDataToSend.append("thumbnail", thumbnail);
       }
 
-      const response = await PostAPI.updateDraft(id, formDataToSend);
+      let response;
+      // console.log("Form gửi đi:", formDataToSend.toString());
+      console.log("FormData gửi đi:");
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      if (!post.id) {
+        console.log("Không bao giờ vào đây");
+
+        response = await PostAPI.createDraft(formDataToSend);
+        if (response.data?.data) {
+          setPost({
+            id: response.data.data.id,
+            // status: response.data.data.status
+          });
+        }
+      } else {
+        response = await PostAPI.update(post.id, formDataToSend);
+      }
 
       if (response.data?.data) {
         const savedData = { ...formData };
@@ -182,7 +188,17 @@ const CreatePostForm = () => {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("_method", "PUT");
+
+      if (post.id) {
+        formDataToSend.append("_method", "PUT");
+      }
+
+      if (user.role === "admin") {
+        formDataToSend.append("status", "published");
+      } else {
+        formDataToSend.append("status", "pending");
+      }
+
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
       formDataToSend.append("category_id", formData.category_id);
@@ -195,10 +211,16 @@ const CreatePostForm = () => {
         formDataToSend.append("thumbnail", thumbnail);
       }
 
-      const response = await PostAPI.submitPost(id, formDataToSend);
+      let response;
+      if (!post.id) {
+        response = await PostAPI.create(formDataToSend);
+      } else {
+        response = await PostAPI.update(post.id, formDataToSend);
+      }
 
       if (response.data?.data) {
-        navigate("/admin/posts");
+        if (user.role === "admin") navigate("/admin/posts");
+        else navigate("/author/posts");
       } else {
         throw new Error("Đã có lỗi xảy ra!");
       }

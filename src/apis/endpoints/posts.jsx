@@ -12,24 +12,24 @@ const PostAPI = {
         "Content-Type": "multipart/form-data",
       },
     }),
+  createDraft: (postData) =>
+    api.post(`/posts/draft`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
   update: (id, postData) =>
     api.post(`/posts/${id}`, postData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     }),
-  updateDraft: (id, postData) =>
-    api.post(`/posts/${id}/draft?_method=PUT`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
-  submitPost: (id, postData) =>
-    api.post(`/posts/${id}/submit?_method=PUT`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
+  // submitPost: (id, postData) =>
+  //   api.post(`/posts/${id}/submit?_method=PUT`, postData, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   }),
   approve: (id) => api.put(`/posts/${id}/approve`),
   reject: (id) => api.put(`/posts/${id}/reject`),
 

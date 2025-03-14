@@ -27,6 +27,7 @@ const CreatePostSidebar = ({
               }))
             : []),
         ]}
+        value={formData.category_id}
         onChange={(e) => handleChange("category_id", e.target.value)}
         className=""
         disabled={loadingCategories}

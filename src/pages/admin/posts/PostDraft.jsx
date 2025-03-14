@@ -51,11 +51,17 @@ const PostDraft = () => {
     fetchUsers();
   }, []);
 
-  const handleEdit = () => {
+  const handleEdit = (postId) => {
     const userRole = localStorage.getItem("role");
     const basePath = userRole === "admin" ? "/admin" : "/author";
-    navigate(`${basePath}/posts/edit/${paginatedPosts[page - 1].id}`);
+    navigate(`${basePath}/posts/edit/${postId}`);
   };
+
+  // const handleEdit = () => {
+  //   const userRole = localStorage.getItem("role");
+  //   const basePath = userRole === "admin" ? "/admin" : "/author";
+  //   navigate(`${basePath}/posts/edit/${paginatedPosts[page - 1].id}`);
+  // };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
@@ -112,7 +118,7 @@ const PostDraft = () => {
                   <Button
                     variant="outline"
                     className="border-blue-500 text-hover hover:bg-blue-200 block"
-                    onClick={handleEdit}
+                    onClick={() => handleEdit(post.id)}
                   >
                     <FiEdit />
                   </Button>

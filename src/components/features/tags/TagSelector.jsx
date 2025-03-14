@@ -21,17 +21,28 @@ const TagSelector = ({
   //   }
   // }, [isOpen, selectedTags]);
 
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     // console.log("Mở modal, selectedTags hiện tại:", selectedTags);
+  //     setLocalSelectedTags((prev) => {
+  //       if (JSON.stringify(prev) !== JSON.stringify(selectedTags)) {
+  //         return selectedTags;
+  //       }
+  //       return prev;
+  //     });
+  //   }
+  // }, [isOpen, selectedTags]);
+
   useEffect(() => {
     if (isOpen) {
-      // console.log("Mở modal, selectedTags hiện tại:", selectedTags);
-      setLocalSelectedTags((prev) => {
-        if (JSON.stringify(prev) !== JSON.stringify(selectedTags)) {
-          return selectedTags;
-        }
-        return prev;
-      });
+      console.log("Mở modal, selectedTags hiện tại:", selectedTags);
+      setLocalSelectedTags([...selectedTags]); // Tạo một bản sao để tránh tham chiếu
     }
   }, [isOpen, selectedTags]);
+
+  useEffect(() => {
+    setLocalSelectedTags(selectedTags); // Cập nhật ngay khi `selectedTags` thay đổi
+  }, [selectedTags]);
 
   const handleTagToggle = (tag) => {
     setLocalSelectedTags((prev) => {
@@ -41,7 +52,7 @@ const TagSelector = ({
         : [...prev, tag];
 
       console.log("🟢 Tags đã chọn sau khi click:", newTags);
-      onTagsSelected(newTags);
+      // onTagsSelected(newTags);
       return newTags;
     });
   };

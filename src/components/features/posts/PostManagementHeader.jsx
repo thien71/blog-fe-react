@@ -39,29 +39,30 @@ const PostManagementHeader = ({ title = "Quản lí bài viết" }) => {
     {
       label: "Quản lí bài viết",
       icon: <BsNewspaper size={20} />,
-      path: basePath,
+      path: `${basePath}`,
     },
     {
       label: "Viết bài",
       icon: <FaPenToSquare size={20} />,
       isCreatePost: true,
+      path: `${basePath}/create`,
     },
   ];
 
   const handleClick = async (btn) => {
     setActive(btn.label);
-
-    if (btn.isCreatePost) {
-      try {
-        const response = await PostAPI.create({ title: "" });
-        const postId = response.data?.data?.id;
-        navigate(`${basePath}/edit/${postId}`);
-      } catch (error) {
-        console.error("Lỗi tạo bài viết:", error);
-      }
-    } else {
-      navigate(btn.path);
-    }
+    navigate(btn.path);
+    // if (btn.isCreatePost) {
+    //   try {
+    //     const response = await PostAPI.create({ title: "" });
+    //     const postId = response.data?.data?.id;
+    //     navigate(`${basePath}/edit/${postId}`);
+    //   } catch (error) {
+    //     console.error("Lỗi tạo bài viết:", error);
+    //   }
+    // } else {
+    //   navigate(btn.path);
+    // }
   };
 
   return (
