@@ -1,24 +1,23 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
-import { useNavigate } from "react-router-dom";
-import PostAPI from "../../../apis/endpoints/posts";
+import PostAPI from "../../apis/endpoints/posts";
 import {
   Table,
   Pagination,
-  ConfirmModal,
-  PostSearchBar,
-  CategoryTagTableActions,
+  Button,
   PostManagementHeader,
-} from "../../../components";
+  Input,
+  PostSearchBar,
+} from "../../components";
 
-import useModal from "../../../hooks/useModal";
-import usePagination from "../../../hooks/usePagination";
-import { useAuth } from "../../../contexts/AuthContext";
+import { FiEdit, FiEye } from "react-icons/fi";
+import usePagination from "../../hooks/usePagination";
 
-const PostManagement = () => {
-  const { user, loading } = useAuth();
-
+const PostRejected = () => {
+  const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: "",
     categoryFilter: "",
@@ -28,9 +27,6 @@ const PostManagement = () => {
     viewMaxFilter: "",
   });
 
-  const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
-
   const {
     search,
     categoryFilter,
@@ -39,13 +35,6 @@ const PostManagement = () => {
     viewMinFilter,
     viewMaxFilter,
   } = filters;
-
-  const {
-    isOpen: isConfirmOpen,
-    selectedItem: postToConfirm,
-    openModal: openConfirmModal,
-    closeModal: closeConfirmModal,
-  } = useModal();
 
   const updateFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -96,69 +85,30 @@ const PostManagement = () => {
     itemsPerPage,
   } = usePagination(filteredPosts, 5);
 
-  const fetchPosts = useCallback(async () => {
-    if (loading || !user) return;
-
+  const fetchUsers = async () => {
     try {
-      let response;
-      if (user.role === "admin") {
-        response = await PostAPI.getAll();
-      } else if (user.role === "author") {
-        response = await PostAPI.getByAuthor(user.id);
-      }
-
-      if (response?.data?.data?.length) {
+      const response = await PostAPI.getRejected();
+      if (response.data.data?.length) {
         setPosts(response.data.data);
       }
     } catch (error) {
       console.error("Lỗi khi tải posts", error);
     }
-  }, [user, loading]);
+  };
 
   useEffect(() => {
-    if (!loading) {
-      fetchPosts();
-    }
-  }, [fetchPosts, loading]);
-
-  const handleEdit = useCallback(
-    (postId) => {
-      if (!user) return;
-
-      const basePath = user.role === "admin" ? "/admin" : "/author";
-      navigate(`${basePath}/posts/edit/${postId}`);
-    },
-    [navigate, user]
-  );
-
-  const handleConfirmAction = useCallback(async () => {
-    if (!postToConfirm) return;
-
-    try {
-      await PostAPI.delete(postToConfirm.id);
-      await fetchPosts();
-    } catch (error) {
-      console.error("Lỗi khi xác nhận hành động", error);
-    } finally {
-      closeConfirmModal();
-    }
-  }, [postToConfirm, closeConfirmModal, fetchPosts]);
-
-  const renderStatus = useCallback((status) => {
-    return status === "published" ? (
-      <span className="text-green-500">Công khai</span>
-    ) : (
-      <span className="text-red-500">Đã ẩn</span>
-    );
+    fetchUsers();
   }, []);
 
-  if (loading) {
-    return <div className="p-6 text-center">Đang tải...</div>;
-  }
+  const handleView = (postId) => {
+    const userRole = localStorage.getItem("role");
+    const basePath = userRole === "admin" ? "/admin" : "/author";
+    navigate(`${basePath}/posts/edit/${postId}`);
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
-      <PostManagementHeader />
+      <PostManagementHeader title="Bị từ chối" />
 
       <PostSearchBar
         search={search}
@@ -173,12 +123,11 @@ const PostManagement = () => {
         setViewMinFilter={(value) => updateFilter("viewMinFilter", value)}
         viewMaxFilter={viewMaxFilter}
         setViewMaxFilter={(value) => updateFilter("viewMaxFilter", value)}
-        // Chỉ hiển thị filter author nếu là admin
         visibleFilters={{
           category: true,
-          author: user?.role === "admin",
-          status: true,
-          views: true,
+          author: false,
+          status: false,
+          views: false,
         }}
       />
 
@@ -195,12 +144,8 @@ const PostManagement = () => {
                 <th className="border p-2">Ảnh</th>
                 <th className="border p-2">Tiêu đề</th>
                 <th className="border p-2">Danh mục</th>
-                <th className="border p-2">
-                  {user.role === "admin" ? "Tác giả" : "Ngày cập nhật"}
-                </th>
+                <th className="border p-2">Tags</th>
                 <th className="border p-2">Ngày tạo</th>
-                <th className="border p-2">Lượt xem</th>
-                <th className="border p-2">Trạng thái</th>
                 <th className="border p-2">Hành động</th>
               </tr>
             </thead>
@@ -218,37 +163,28 @@ const PostManagement = () => {
                   <td className="border p-2 text-left max-w-sm">
                     <p className="line-clamp-2">{post.title}</p>
                   </td>
-                  <td className="border p-2">{post.category.name}</td>
+                  <td className="border p-2">{post?.category?.name}</td>
                   <td className="border p-2 min-w-40">
-                    {user.role === "admin" ? (
-                      <p>{post.author.name}</p>
-                    ) : (
-                      <p>
-                        {format(
-                          new Date(post.updated_at),
-                          " HH:mm - dd/MM/yyyy",
-                          {
-                            locale: vi,
-                          }
-                        )}
-                      </p>
-                    )}
+                    <p>{post?.tags?.map((tag) => tag.name).join(", ")}</p>
                   </td>
                   <td className="border p-2 max-w-28">
-                    <p>
+                    <p className="">
                       {format(new Date(post.created_at), "dd/MM/yyyy", {
                         locale: vi,
                       })}
                     </p>
                   </td>
-                  <td className="border p-2">{post.views}</td>
-                  <td className="border p-2">{renderStatus(post.status)}</td>
+
                   <td className="border p-2">
-                    <CategoryTagTableActions
-                      data={post}
-                      onEdit={() => handleEdit(post.id)}
-                      onDelete={openConfirmModal}
-                    />
+                    <div className="flex justify-center gap-4 items-center">
+                      <Button
+                        variant="outline"
+                        className="border-blue-500 text-hover hover:bg-blue-200 block"
+                        onClick={() => handleView(post.id)}
+                      >
+                        <FiEdit />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -263,18 +199,8 @@ const PostManagement = () => {
           />
         </>
       )}
-
-      {isConfirmOpen && (
-        <ConfirmModal
-          isOpen={isConfirmOpen}
-          title="Xác nhận xoá bài viết"
-          message="Bạn có chắc chắn muốn xoá bài viết này"
-          onConfirm={handleConfirmAction}
-          onCancel={closeConfirmModal}
-        />
-      )}
     </div>
   );
 };
 
-export default PostManagement;
+export default PostRejected;

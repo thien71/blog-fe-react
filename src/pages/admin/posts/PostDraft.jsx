@@ -75,66 +75,74 @@ const PostDraft = () => {
         />
       </div>
 
-      <Table>
-        <thead>
-          <tr>
-            <th className="border p-2">Id</th>
-            <th className="border p-2">Ảnh</th>
-            <th className="border p-2">Tiêu đề</th>
-            <th className="border p-2">Danh mục</th>
-            <th className="border p-2">Tác giả</th>
-            <th className="border p-2">Ngày tạo</th>
-            <th className="border p-2">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedPosts.map((post) => (
-            <tr key={post.id} className="text-center">
-              <td className="border p-2">{post.id}</td>
-              <td className="border p-2 max-w-20">
-                <img
-                  src={post.thumbnail || "https://placehold.co/80x48"}
-                  alt={post.title}
-                  className="aspect-[5/3] object-cover w-full bg-gray-300 rounded-md"
-                />
-              </td>
-              <td className="border p-2 text-left max-w-sm">
-                <p className="line-clamp-2">{post.title}</p>
-              </td>
-              <td className="border p-2">{post?.category?.name}</td>
-              <td className="border p-2 min-w-40">
-                <p className="">{post?.author?.name}</p>
-              </td>
-              <td className="border p-2 max-w-28">
-                <p className="">
-                  {format(new Date(post.created_at), "dd/MM/yyyy", {
-                    locale: vi,
-                  })}
-                </p>
-              </td>
+      {posts.length === 0 ? (
+        <div className="text-center py-10">
+          <p>Không có bài viết nào</p>
+        </div>
+      ) : (
+        <>
+          <Table>
+            <thead>
+              <tr>
+                <th className="border p-2">Id</th>
+                <th className="border p-2">Ảnh</th>
+                <th className="border p-2">Tiêu đề</th>
+                <th className="border p-2">Danh mục</th>
+                <th className="border p-2">Tác giả</th>
+                <th className="border p-2">Ngày tạo</th>
+                <th className="border p-2">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedPosts.map((post) => (
+                <tr key={post.id} className="text-center">
+                  <td className="border p-2">{post.id}</td>
+                  <td className="border p-2 max-w-20">
+                    <img
+                      src={post.thumbnail || "https://placehold.co/80x48"}
+                      alt={post.title}
+                      className="aspect-[5/3] object-cover w-full bg-gray-300 rounded-md"
+                    />
+                  </td>
+                  <td className="border p-2 text-left max-w-sm">
+                    <p className="line-clamp-2">{post.title}</p>
+                  </td>
+                  <td className="border p-2">{post?.category?.name}</td>
+                  <td className="border p-2 min-w-40">
+                    <p className="">{post?.author?.name}</p>
+                  </td>
+                  <td className="border p-2 max-w-28">
+                    <p className="">
+                      {format(new Date(post.created_at), "dd/MM/yyyy", {
+                        locale: vi,
+                      })}
+                    </p>
+                  </td>
 
-              <td className="border p-2">
-                <div className="flex justify-center gap-4 items-center">
-                  <Button
-                    variant="outline"
-                    className="border-blue-500 text-hover hover:bg-blue-200 block"
-                    onClick={() => handleEdit(post.id)}
-                  >
-                    <FiEdit />
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                  <td className="border p-2">
+                    <div className="flex justify-center gap-4 items-center">
+                      <Button
+                        variant="outline"
+                        className="border-blue-500 text-hover hover:bg-blue-200 block"
+                        onClick={() => handleEdit(post.id)}
+                      >
+                        <FiEdit />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
 
-      <Pagination
-        total={totalItems}
-        perPage={itemsPerPage}
-        currentPage={page}
-        onPageChange={setPage}
-      />
+          <Pagination
+            total={totalItems}
+            perPage={itemsPerPage}
+            currentPage={page}
+            onPageChange={setPage}
+          />
+        </>
+      )}
     </div>
   );
 };

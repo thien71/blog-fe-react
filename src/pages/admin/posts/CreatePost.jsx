@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button, CreatePostForm, CreatePostModal } from "../../../components";
+import { CreatePostForm } from "../../../components";
 
 const CreatePost = () => {
   return (

@@ -44,23 +44,29 @@ const CreatePostForm = () => {
     const fetchPost = async () => {
       try {
         const response = await PostAPI.getById(id);
+        console.log("API Response:", response);
         if (!isMounted) return;
+
+        if (!response.data || !response.data.data) {
+          console.error("Không có dữ liệu bài viết!");
+          return;
+        }
+
         const postData = response.data?.data;
+        console.log("Dữ liệu nhận được:", postData);
+
         setFormData({
           title: postData.title,
           content: postData.content,
-          category_id: postData.category.id,
-          // tag: postData.tags.map((tag) => ({ label: tag })),
-          // tag: postData.tags.map((tag) => ({ label: tag, value: tag })),
+          category_id: postData.category?.id,
           tag: postData.tags.map((tag) => ({ label: tag.name, value: tag.id })),
           thumbnail: null,
         });
         setOriginalData({
           title: postData.title,
           content: postData.content,
-          category_id: postData.category.id,
-          // tag: postData.tags.map((tag) => ({ label: tag })),
-          tag: postData.tags.map((tag) => ({ label: tag, value: tag })), // Sửa lỗi
+          category_id: postData.category?.id,
+          tag: postData.tags.map((tag) => ({ label: tag.name, value: tag.id })),
           thumbnail: null,
         });
         setThumbnailPreview(postData.thumbnail);

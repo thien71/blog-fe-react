@@ -6,6 +6,7 @@ const PostAPI = {
   getById: (id) => api.get(`/posts/id/${id}`),
   getDraft: () => api.get(`/posts/draft/me`),
   getPending: () => api.get(`/admin/posts/pending`),
+  getRejected: () => api.get(`/admin/posts/reject`),
   create: (postData) =>
     api.post(`/posts`, postData, {
       headers: {

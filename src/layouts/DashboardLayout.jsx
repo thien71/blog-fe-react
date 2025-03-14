@@ -12,6 +12,7 @@ const adminMenu = [
 
 const authorMenu = [
   { path: "/author/posts", label: "Quản lí bài viết" },
+  { path: "/author/categories", label: "Quản lí danh mục" },
   { path: "/author/tags", label: "Quản lí các tag" },
 ];
 
