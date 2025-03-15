@@ -26,10 +26,10 @@ const ConfirmModal = ({
           <span> không?</span>
         </p>
         <div className="flex justify-center gap-4 mt-4">
-          <Button variant="secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" onClick={onCancel}>
             {cancelText}
           </Button>
-          <Button variant={confirmVariant} onClick={onConfirm}>
+          <Button type="button" variant={confirmVariant} onClick={onConfirm}>
             {confirmText}
           </Button>
         </div>
