@@ -9,6 +9,7 @@ export default {
         summary: "#4f4f4f",
         views: "#076DB6",
         hover: "#087cce",
+        secondary: "#757575",
         // button: {
         //   primary: {
         //     background: "rgb(59 130 246)",

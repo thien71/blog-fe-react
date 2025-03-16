@@ -15,3 +15,16 @@ a:hover {
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
+
+@layer base {
+  .prose > p {
+    @apply mb-4;
+  }
+
+  /* .prose > img {
+    @apply w-full;
+    @apply rounded-md;
+    @apply object-cover;
+    @apply mb-8;
+  } */
+}
