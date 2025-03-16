@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostAPI from "../../apis/endpoints/posts";
-
-import { Divider } from "../../components";
+import PostItem from "./components/PostItem";
 
 const PostDetailPage = () => {
   const { slug } = useParams();
@@ -67,61 +66,45 @@ const PostDetailPage = () => {
       </p>
 
       <ul className="w-full p-4 border mb-6">
-        {/* <PostItem /> */}
-        <li className="w-full flex gap-4 pb-4 border-b mb-4">
-          <div className="w-36">
-            <img
-              src={post.thumbnail}
-              alt=""
-              className="object-cover aspect-[5/3]"
-            />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-title font-title font-bold mb-2 leading-normal">
-              {post.title}
-            </h3>
-            <p className="text-summary font-summary text-sm line-clamp-2 leading-relaxed">
-              {post.title}
-            </p>
-          </div>
-        </li>
-        <li className="w-full flex gap-4">
-          <div className="w-36">
-            <img
-              src={post.thumbnail}
-              alt=""
-              className="object-cover aspect-[5/3]"
-            />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-title font-title font-bold mb-2 leading-normal">
-              {post.title}
-            </h3>
-            <p className="text-summary font-summary text-sm line-clamp-2 leading-relaxed">
-              {post.title}
-            </p>
-          </div>
-        </li>
+        <PostItem post={post} />
+        <PostItem post={post} />
+        <PostItem post={post} className="border-none pb-0 mb-0" />
       </ul>
 
-      <div className="flex items-center gap-3 mt-6">
-        <h5 className="text-base font-medium text-title whitespace-nowrap">
+      <div className="flex items-center gap-8 pt-2 pb-4 mb-6 border-b">
+        <h5 className="text-sm font-medium text-secondary whitespace-nowrap">
           Tags:
         </h5>
 
-        <ul className="flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-8 max-h-8">
           {post.tags.map((tag) => (
-            <li key={tag.id}>
-              <a
-                href="#"
-                className="bg-title text-white text-base px-4 py-1 before:content-[''] before:top-0 before:left-0 before:w-0 before:h-0
-                        before:border-solid before:border-[30px] before:border-transparent before:border-l-red-500 before:rotate-90
-                       "
-              >
-                {tag.name}
-              </a>
+            <li key={tag.id} className="group relative">
+              <div className="relative px-4 py-[6px] bg-black flex items-center group-hover:bg-gray-700">
+                <div
+                  className="absolute top-0 left-[-16px] border-y-[16px] border-r-[16px] border-transparent
+                 border-r-black group-hover:border-r-gray-700"
+                ></div>
+                <div className="absolute top-3 -left-1 rounded-full p-1 bg-white"></div>
+                <a
+                  href="#"
+                  className="block text-white text-sm group-hover:text-white"
+                >
+                  {tag.name}
+                </a>
+              </div>
             </li>
           ))}
+        </ul>
+      </div>
+
+      <div className="">
+        <h5 className="text-lg font-title text-title whitespace-nowrap mb-6 border-b-2 border-primary inline-block">
+          {post.category.name}
+        </h5>
+        <ul className="w-full mb-6">
+          <PostItem post={post} />
+          <PostItem post={post} />
+          <PostItem post={post} />
         </ul>
       </div>
     </div>
