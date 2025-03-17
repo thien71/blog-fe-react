@@ -4,7 +4,7 @@ const DashboardSidebar = ({ menuItems }) => {
   const location = useLocation();
 
   return (
-    <aside className="w-64 bg-white border-r h-screen p-4 fixed top-14 left-0">
+    <aside className="w-48 bg-white border-r h-screen p-4 fixed top-14 left-0">
       <nav>
         {menuItems.map((item) => (
           <Link

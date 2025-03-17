@@ -42,7 +42,7 @@ const DashboardLayout = () => {
         <DashboardSidebar
           menuItems={user.role === "admin" ? adminMenu : authorMenu}
         />
-        <main className="flex-1 p-3 overflow-auto bg-gray-100 ml-64">
+        <main className="flex-1 p-3 overflow-auto bg-gray-100 ml-48">
           <Outlet />
         </main>
       </div>

@@ -7,35 +7,6 @@ const PostAPI = {
   getDraft: () => api.get(`/posts/draft/me`),
   getPending: () => api.get(`/admin/posts/pending`),
   getRejected: () => api.get(`/admin/posts/reject`),
-  create: (postData) =>
-    api.post(`/posts`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
-  createDraft: (postData) =>
-    api.post(`/posts/draft`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
-  update: (id, postData) =>
-    api.post(`/posts/${id}`, postData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
-  // submitPost: (id, postData) =>
-  //   api.post(`/posts/${id}/submit?_method=PUT`, postData, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   }),
-  approve: (id) => api.put(`/posts/${id}/approve`),
-  reject: (id) => api.put(`/posts/${id}/reject`),
-
-  delete: (id) => api.delete(`/posts/${id}`),
-  forceDelete: (id) => api.delete(`/posts/${id}/force`),
   getByAuthor: (authorId) => api.get(`/posts/author/${authorId}`),
   getLatest: (limit) =>
     api.get(limit ? `/posts/latest?limit=${limit}` : "/posts/latest"),
@@ -49,6 +20,38 @@ const PostAPI = {
         ? `/posts/random-by-category?limit=${limit}`
         : "/posts/random-by-category"
     ),
+
+  create: (postData) =>
+    api.post(`/posts`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  createDraft: (postData) =>
+    api.post(`/posts/draft`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+
+  uploadImage: (imageData) =>
+    api.post(`/upload-image`, imageData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+
+  update: (id, postData) =>
+    api.post(`/posts/${id}`, postData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  approve: (id) => api.put(`/posts/${id}/approve`),
+  reject: (id) => api.put(`/posts/${id}/reject`),
+
+  delete: (id) => api.delete(`/posts/${id}`),
+  forceDelete: (id) => api.delete(`/posts/${id}/force`),
 };
 
 export default PostAPI;

@@ -7,7 +7,7 @@ const PostDetailLayout = () => {
       <Header />
       <main className="flex-1 container max-w-screen-xl mx-auto px-6 pt-16 pb-6 flex gap-4">
         <Sidebar />
-        <section className="max-w-screen-lg w-9/12 ml-24 mr-12 h-[2000px]">
+        <section className="max-w-screen-lg w-9/12 ml-24 mr-12">
           <Outlet />
         </section>
         <PostsSidebar />

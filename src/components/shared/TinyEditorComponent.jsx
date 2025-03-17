@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import PostAPI from "../../apis/endpoints/posts";
 
 const TinyEditorComponent = ({ value, onChange }) => {
   const editorRef = useRef(null);
@@ -15,13 +16,33 @@ const TinyEditorComponent = ({ value, onChange }) => {
     }
   };
 
-  const handleImageUpload = (blobInfo) => {
-    return new Promise((resolve) => {
+  const handleImageUpload = async (blobInfo) => {
+    try {
       const file = blobInfo.blob();
-      const tempUrl = URL.createObjectURL(file);
-      resolve(tempUrl);
-    });
+      const formData = new FormData();
+      formData.append("images[0]", file);
+
+      const data = await PostAPI.uploadImage(formData);
+      console.log("data", data.data.urls);
+
+      if (data.data.urls && data.data.urls.length > 0) {
+        return data.data.urls[0];
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw new Error("Upload error");
+    }
   };
+
+  // const handleImageUpload = (blobInfo) => {
+  //   return new Promise((resolve) => {
+  //     const file = blobInfo.blob();
+  //     const tempUrl = URL.createObjectURL(file);
+  //     resolve(tempUrl);
+  //   });
+  // };
 
   const extractImagesFromContent = () => {
     if (!editorRef.current) return [];
@@ -71,10 +92,27 @@ const TinyEditorComponent = ({ value, onChange }) => {
             // "wordcount",
           ],
           toolbar:
-            "undo redo blocks fontselect fontsizeselect bold italic underline forecolor image media link alignleft aligncenter alignright alignjustify bullist numlist outdent indent removeformat help",
+            "undo redo styles fontfamily fontsize bold italic underline forecolor backcolor table image media link align bullist numlist outdent indent removeformat help",
           content_style:
             "body { font-family:Merriweather,Arial,serif; font-size:16px }",
           images_upload_handler: handleImageUpload,
+          setup: (editor) => {
+            editor.on("init", () => {
+              const style = document.createElement("style");
+              style.innerHTML = `
+                .tox-tbtn--select[data-mce-name="styles"] {
+                  width: 90px !important;
+                }
+                .tox-tbtn--select[data-mce-name="fontfamily"] {
+                  width: 90px !important;
+                }
+                .tox-tbtn--select[data-mce-name="fontsize"] {
+                  width: 60px !important;
+                }
+              `;
+              document.head.appendChild(style);
+            });
+          },
         }}
       />
       <button type="button" onClick={log}>

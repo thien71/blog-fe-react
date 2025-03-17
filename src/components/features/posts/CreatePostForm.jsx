@@ -32,7 +32,6 @@ const CreatePostForm = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // const isFirstLoad = useRef(true);
   const isFirstLoad = useRef(!!id);
 
   const getRedirectPath = (subPath = "") => {
@@ -77,7 +76,6 @@ const CreatePostForm = () => {
 
   const handleChange = (name, value) => {
     if (isFirstLoad.current) return;
-    // if (isFirstLoad.current && !formData[value]) return;
 
     setFormData((prev) => {
       if (prev[name] === value) return prev;
@@ -244,7 +242,7 @@ const CreatePostForm = () => {
             onChange={(value) => handleChange("content", value)}
           />
         </div>
-        <div className="w-[300px] flex flex-col justify-between h-auto">
+        <div className="w-[250px] flex flex-col justify-between h-auto">
           <CreatePostSidebar
             thumbnailPreview={thumbnailPreview}
             handleChange={handleChange}

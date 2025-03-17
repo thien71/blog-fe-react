@@ -32,14 +32,14 @@ const CreatePostSidebar = ({
         className=""
         disabled={loadingCategories}
       />
-      <div className="flex gap-4 justify-between items-center pb-4 border-b-2">
+      <div className="flex justify-between items-center pb-4 border-b-2">
         <img
           src={thumbnailPreview || default_image}
           alt="Thumbnail preview"
           className="w-1/2 object-cover aspect-[5/3] rounded-lg border"
         />
 
-        <Input
+        <input
           type="file"
           id="thumbnailInput"
           accept="image/*"
@@ -52,7 +52,7 @@ const CreatePostSidebar = ({
           variant="primary"
           type="button"
           className="text-sm px-2 cursor-pointer bg-blue-500 text-white text-center py-2 rounded-lg 
-        hover:bg-blue-600 transition whitespace-nowrap"
+        hover:bg-blue-600 transition"
         >
           <span>Upload ảnh</span>
         </label>
