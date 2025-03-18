@@ -8,6 +8,8 @@ import PostItem from "./components/PostItem";
 const PostDetailPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
+  const [relatedPosts, setRelatedPosts] = useState([]);
+  const [relatedCategories, setRelatedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,7 +17,17 @@ const PostDetailPage = () => {
     const fetchPost = async () => {
       try {
         const response = await PostAPI.getBySlug(slug);
-        setPost(response.data.data);
+        const postData = response.data.data;
+        setPost(postData);
+
+        const relatedResponse = await PostAPI.getRelated(postData.id, 3);
+        setRelatedPosts(relatedResponse.data.data);
+
+        const relatedCategoriesResponse = await PostAPI.getRelated(
+          postData.id,
+          10
+        );
+        setRelatedCategories(relatedCategoriesResponse.data.data);
       } catch (err) {
         setError("Không tìm thấy bài viết!");
       } finally {
@@ -66,9 +78,15 @@ const PostDetailPage = () => {
       </p>
 
       <ul className="w-full p-4 border mb-6">
-        <PostItem post={post} />
-        <PostItem post={post} />
-        <PostItem post={post} className="border-none pb-0 mb-0" />
+        {relatedPosts.map((post, index) => (
+          <PostItem
+            key={post.id}
+            post={post}
+            className={
+              index === relatedPosts.length - 1 ? "border-none !pb-0 !mb-0" : ""
+            }
+          />
+        ))}
       </ul>
 
       <div className="flex items-center gap-8 pt-2 pb-4 mb-6 border-b">
@@ -102,9 +120,13 @@ const PostDetailPage = () => {
           {post.category.name}
         </h5>
         <ul className="w-full mb-6">
+          {relatedCategories.map((post) => {
+            return <PostItem key={post.id} post={post} />;
+          })}
+
+          {/* <PostItem post={post} />
           <PostItem post={post} />
-          <PostItem post={post} />
-          <PostItem post={post} />
+          <PostItem post={post} /> */}
         </ul>
       </div>
     </div>

@@ -20,6 +20,18 @@ const PostAPI = {
         ? `/posts/random-by-category?limit=${limit}`
         : "/posts/random-by-category"
     ),
+  getRelated: (id, limit = 5) =>
+    api.get(`/posts/${id}/related`, {
+      params: { limit },
+    }),
+  getRelatedCategory: (id, limit = 5) =>
+    api.get(`/posts/${id}/related/category`, {
+      params: { limit },
+    }),
+  getRelatedTag: (id, limit = 5) =>
+    api.get(`/posts/${id}/related/tag`, {
+      params: { limit },
+    }),
 
   create: (postData) =>
     api.post(`/posts`, postData, {

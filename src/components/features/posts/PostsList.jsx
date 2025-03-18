@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { PostItem } from "../../index";
 import PostAPI from "../../../apis/endpoints/posts";
 import { Link } from "react-router-dom";
+import { FaHandPointRight } from "react-icons/fa";
 
 const PostsList = () => {
   const [posts, setPosts] = useState([]);
@@ -20,14 +20,11 @@ const PostsList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-start gap-2 py-4">
+    <div className="flex flex-col items-start gap-4 py-4">
       {posts.map((post) => (
-        <Link to={`/posts/${post.slug}`}>
-          <p
-            key={post.id}
-            className="text-xs text-title font-normal italic hover:text-hover hover:not-italic transition-all cursor-pointer line-clamp-3"
-          >
-            {post.title}
+        <Link key={post.id} to={`/posts/${post.slug}`}>
+          <p className="text-xs text-title font-title font-normal italic leading-tight hover:text-hover hover:translate-x-2 transition-all duration-300 cursor-pointer line-clamp-2">
+            <span>{post.title}</span>
           </p>
         </Link>
       ))}

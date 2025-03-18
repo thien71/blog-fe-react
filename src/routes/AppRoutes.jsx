@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import RootLayout from "../layouts/RootLayout";
 import AuthRoutes from "./auth";
 import HomeRoutes from "./home";
 import PostRoutes from "./post";
@@ -7,14 +8,19 @@ import AuthorRoutes from "./author";
 import NotFound from "../pages/errors/NotFound";
 
 const AppRoutes = createBrowserRouter([
-  ...AuthRoutes,
-  ...HomeRoutes,
-  ...PostRoutes,
-  ...AdminRoutes,
-  ...AuthorRoutes,
   {
-    path: "*",
-    element: <NotFound />,
+    element: <RootLayout />,
+    children: [
+      ...AuthRoutes,
+      ...HomeRoutes,
+      ...PostRoutes,
+      ...AdminRoutes,
+      ...AuthorRoutes,
+      {
+        path: "*",
+        element: <NotFound />,
+      },
+    ],
   },
 ]);
 
