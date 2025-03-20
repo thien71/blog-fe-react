@@ -1,32 +1,25 @@
-import { useEffect, useState } from "react";
-
-import PostAPI from "../../../../apis/endpoints/posts";
+import { Link } from "react-router-dom";
 import { Divider } from "../../../../components";
 import { PostItem } from "../../../../components/index";
-
 import { GoDotFill } from "react-icons/go";
-import { Link } from "react-router-dom";
+import useFetchAPI from "../../../../hooks/useFetchAPI";
+import PostAPI from "../../../../apis/endpoints/posts";
 
 const CategoryPosts = () => {
-  const [categories, setCategories] = useState([]);
+  const {
+    data: categories,
+    loading,
+    error,
+    refetch: fetchData,
+  } = useFetchAPI(PostAPI.getRandomByCategory, []);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await PostAPI.getRandomByCategory();
-        if (response.data?.length) {
-          setCategories(response.data);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải danh sách bài viết theo danh mục:", error);
-      }
-    })();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="w-3/5 pl-8 border-l border-gray-300">
       {categories.map((category, index) => (
-        <div key={category.id} className="">
+        <div key={category.id}>
           <h2 className="relative inline-block text-title text-lg font-extrabold font-title leading-relaxed mb-2 before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-primary">
             <Link
               to={`/categories/${category.name.toLowerCase()}`}

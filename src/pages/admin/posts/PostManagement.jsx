@@ -268,7 +268,7 @@ const PostManagement = () => {
         <ConfirmModal
           isOpen={isConfirmOpen}
           title="Xác nhận xoá bài viết"
-          message="Bạn có chắc chắn muốn xoá bài viết này"
+          message="Bạn có chắc chắn muốn xoá bài viết này "
           onConfirm={handleConfirmAction}
           onCancel={closeConfirmModal}
         />
