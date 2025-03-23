@@ -1,65 +1,66 @@
+import { Link } from "react-router-dom";
+import { Logo } from "../../common";
+import { useCategory } from "../../../contexts/CategoryContext";
+
 const Footer = () => {
+  const { categories, loading, error } = useCategory();
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  const columns = [[], [], []];
+  categories.forEach((category, index) => {
+    columns[index % 3].push(category);
+  });
+
   return (
-    <footer className="bg-white text-title py-10 border-t">
-      {/* <div className="container max-w-screen-xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-start">
-            <h2 className="text-2xl font-bold">MyBlog</h2>
-            <p className="mt-2">
-              Chia sẻ kiến thức, kinh nghiệm và góc nhìn về công nghệ, lập trình
-              và cuộc sống.
+    <footer className="bg-title text-white py-10 border-t">
+      <div className="container max-w-screen-xl mx-auto px-6">
+        <div className="flex md:grid-cols-3 gap-8">
+          <div className="flex flex-col items-start w-4/12">
+            <Logo
+              className={"!text-3xl !font-bold text-primary brightness-150"}
+            />
+            <p className="mt-4">
+              Chia sẻ kiến thức, kinh nghiệm và góc nhìn về những thứ tôi đã
+              trải trong cuộc sống.
             </p>
           </div>
 
-          <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold">Danh mục</h3>
-            <ul className="mt-2 space-y-2">
-              <li>
-                <a href="#" className="hover:text-hover">
-                  Công nghệ
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-hover">
-                  Lập trình
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-hover">
-                  Đời sống
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-hover">
-                  Kinh nghiệm
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold">Theo dõi chúng tôi</h3>
-            <div className="mt-3 flex space-x-4">
-              <a href="#" className="hover:text-hover">
-                <i className="fab fa-facebook text-xl"></i>
-              </a>
-              <a href="#" className="hover:text-hover">
-                <i className="fab fa-twitter text-xl"></i>
-              </a>
-              <a href="#" className="hover:text-hover">
-                <i className="fab fa-github text-xl"></i>
-              </a>
-              <a href="#" className="hover:text-hover">
-                <i className="fab fa-linkedin text-xl"></i>
-              </a>
+          <div className="flex flex-col items-center w-6/12">
+            <h3 className="text-lg font-semibold brightness-150">Danh mục</h3>
+            <div className="mt-2 flex space-x-8">
+              {columns.map((column, colIndex) => (
+                <ul key={colIndex} className="space-y-2">
+                  {column.map((category) => (
+                    <li key={category.id}>
+                      <Link
+                        to={`/${category.name}`}
+                        className="hover:text-hover"
+                      >
+                        {category.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ))}
             </div>
           </div>
+
+          <div className="flex flex-col items-center w-2/12">
+            <h3 className="text-lg font-semibold brightness-150">
+              Theo dõi chúng tôi
+            </h3>
+          </div>
         </div>
 
-        <div className="border-t border-gray-400 mt-8 pt-4 text-center text-sm text-summary">
-          © {new Date().getFullYear()} MyBlog. All rights reserved.
+        <div className="border-t border-gray-400 mt-8 pt-4 text-center text-sm text-[#f9f9f9]">
+          © {new Date().getFullYear()} bản quyền thuộc{" "}
+          <span className="text-primary brightness-150">
+            Thiện đang trải đời.
+          </span>
         </div>
-      </div> */}
+      </div>
     </footer>
   );
 };
