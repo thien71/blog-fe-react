@@ -1,41 +1,61 @@
+import React from "react";
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
-import { Divider } from "../index";
 
-const SocialLinks = ({ className = "" }) => {
+const defaultLinks = [
+  {
+    name: "Facebook",
+    url: "https://facebook.com",
+    icon: FaFacebook,
+    color: "text-blue-600",
+    hoverColor: "hover:text-blue-800",
+  },
+  {
+    name: "Twitter",
+    url: "https://twitter.com",
+    icon: FaTwitter,
+    color: "text-blue-600",
+    hoverColor: "hover:text-blue-400",
+  },
+  {
+    name: "LinkedIn",
+    url: "https://linkedin.com",
+    icon: FaLinkedin,
+    color: "text-blue-600",
+    hoverColor: "hover:text-blue-800",
+  },
+];
+
+const SocialLinks = ({
+  title = "",
+  links = defaultLinks,
+  className = "",
+  classNameA = "",
+  classNameSpan = "",
+}) => {
   return (
     <div
-      className={`flex flex-col items-start gap-3 border-b-2 py-4 ${className}`}
+      className={`flex flex-col items-start gap-3 border-b-2 pt-1 pb-4 text-title ${className}`}
     >
-      <h3 className="text-title text-center w-full text-base uppercase font-semibold">
-        Social links
-      </h3>
-      <a
-        href="https://facebook.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
-      >
-        <FaFacebook className="w-6 h-6" />
-        <span className="text-title hover:text-blue-600">Facebook</span>
-      </a>
-      <a
-        href="https://twitter.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-400 hover:text-blue-600"
-      >
-        <FaTwitter className="w-6 h-6" />
-        <span className="text-title hover:text-blue-600">Twitter</span>
-      </a>
-      <a
-        href="https://linkedin.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-700 hover:text-blue-900"
-      >
-        <FaLinkedin className="w-6 h-6" />
-        <span className="text-title hover:text-blue-600">LinkedIn</span>
-      </a>
+      {title || (
+        <h3 className="text-center w-full text-base uppercase font-semibold">
+          {title}
+        </h3>
+      )}
+      {links.map((link, index) => {
+        const Icon = link.icon;
+        return (
+          <a
+            key={index}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center gap-2 ${link.color} ${link.hoverColor} ${classNameA}`}
+          >
+            <Icon className="w-6 h-6" />
+            <span className={`${classNameSpan}`}>{link.name}</span>
+          </a>
+        );
+      })}
     </div>
   );
 };

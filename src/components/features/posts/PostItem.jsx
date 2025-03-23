@@ -57,7 +57,11 @@ const PostItem = ({
 
       {layout === "title-image-summary" && (
         <div className="flex flex-col w-full gap-2">
-          <h3 className={clsx(defaultTitleClass, titleClass)}>{post.title}</h3>
+          <h3
+            className={clsx(defaultTitleClass, titleClass, "hover:text-views")}
+          >
+            {post.title}
+          </h3>
           <div className="flex items-start gap-3">
             {post.thumbnail && renderImage("left")}
             {post.summary && (
@@ -72,7 +76,7 @@ const PostItem = ({
       {layout === "image-title" && post.thumbnail && (
         <div
           className={clsx(
-            "flex items-start gap-3 w-full",
+            "flex items-start gap-3 w-full group",
             imagePosition === "top" || imagePosition === "bottom"
               ? "flex-col"
               : "flex-row"
@@ -80,7 +84,14 @@ const PostItem = ({
         >
           {(imagePosition === "top" || imagePosition === "left") &&
             renderImage(imagePosition)}
-          <h3 className={clsx("text-left", defaultTitleClass, titleClass)}>
+          <h3
+            className={clsx(
+              "text-left",
+              defaultTitleClass,
+              titleClass,
+              "group-hover:text-views"
+            )}
+          >
             {post.title}
           </h3>
           {(imagePosition === "bottom" || imagePosition === "right") &&

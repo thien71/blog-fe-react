@@ -12,7 +12,7 @@ const PostDetailLayout = () => {
         </section>
         <PostsSidebar />
       </main>
-      <Footer />
+      <Footer className={"ml-[200px]"} />
     </div>
   );
 };

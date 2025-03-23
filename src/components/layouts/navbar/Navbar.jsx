@@ -33,7 +33,7 @@ const Navbar = ({ className }) => {
           className="text-sm font-title placeholder:font-summary px-2 py-1 outline-none border-none w-24 transition"
         />
         <div className="inline-block mr-4 group hover:cursor-pointer p-1">
-          <FaSearch className="group-hover:opacity-70" />
+          <FaSearch className="group-hover:opacity-70 text-title" />
         </div>
       </div>
     </nav>

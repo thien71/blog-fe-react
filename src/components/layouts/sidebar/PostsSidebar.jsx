@@ -2,27 +2,18 @@ import { useState, useEffect } from "react";
 import PostAPI from "../../../apis/endpoints/posts";
 import { PostItem, Divider } from "../../../components";
 import { Link } from "react-router-dom";
+import useFetchAPI from "../../../hooks/useFetchAPI";
 
 const PostsSidebar = () => {
-  const [posts, setPosts] = useState([]);
+  const { data: posts, loading, error } = useFetchAPI(PostAPI.getPopular, [5]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await PostAPI.getPopular(5);
-        if (response.data.data?.length) {
-          setPosts(response.data.data);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải bài viết phổ biến:", error);
-      }
-    })();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <aside className="w-3/12 pl-0 hidden md:block">
+    <aside className="w-3/12 pl-0 hidden md:block text-title">
       <div className="sticky top-16">
-        <h2 className="text-lg font-semibold mb-4">Top bài viết</h2>
+        <h2 className="text-lg font-semibold mb-4 font-title">Top bài viết</h2>
         <div className="flex flex-col gap-2">
           {posts.length > 0 ? (
             posts.map((post) => (

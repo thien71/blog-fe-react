@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Logo } from "../../common";
 import { useCategory } from "../../../contexts/CategoryContext";
+import { SocialLinks } from "../../shared";
 
-const Footer = () => {
+const Footer = ({ className }) => {
   const { categories, loading, error } = useCategory();
 
   if (loading) return <p>Loading...</p>;
@@ -14,7 +15,7 @@ const Footer = () => {
   });
 
   return (
-    <footer className="bg-title text-white py-10 border-t">
+    <footer className={`bg-title text-white py-10 border-t ${className}`}>
       <div className="container max-w-screen-xl mx-auto px-6">
         <div className="flex md:grid-cols-3 gap-8">
           <div className="flex flex-col items-start w-4/12">
@@ -47,10 +48,15 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center w-2/12">
-            <h3 className="text-lg font-semibold brightness-150">
-              Theo dõi chúng tôi
+          <div className="flex flex-col w-2/12">
+            <h3 className="text-lg text-center w-full font-semibold brightness-150">
+              Theo dõi tôi
             </h3>
+            <SocialLinks
+              className="border-none"
+              classNameA="gap-4"
+              classNameSpan="text-white"
+            />
           </div>
         </div>
 

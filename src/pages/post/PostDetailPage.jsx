@@ -123,10 +123,6 @@ const PostDetailPage = () => {
           {relatedCategories.map((post) => {
             return <PostItem key={post.id} post={post} />;
           })}
-
-          {/* <PostItem post={post} />
-          <PostItem post={post} />
-          <PostItem post={post} /> */}
         </ul>
       </div>
     </div>
