@@ -13,7 +13,7 @@ const Navbar = ({ className }) => {
   return (
     <nav className={`flex items-center ${className}`}>
       <div className="overflow-x-auto flex-1 scrollbar-hidden min-w-0 px-2">
-        <ul className="flex items-center space-x-6 flex-nowrap min-w-max">
+        <ul className="flex items-center space-x-6 flex-nowrap min-w-max ">
           {categories.map((item, index) => (
             <li key={index} className="text-nowrap">
               <Link to={`/${item.name}`} className="text-title">
@@ -24,7 +24,7 @@ const Navbar = ({ className }) => {
         </ul>
       </div>
 
-      <div className="relative flex items-center border ml-4 pl-1 border-gray-300 rounded-lg">
+      <div className="relative flex justify-between items-center border ml-4 pl-1 border-gray-300 rounded-lg min-w-64">
         <input
           type="text"
           value={search}
