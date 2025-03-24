@@ -1,13 +1,15 @@
 import MainLayout from "../../layouts/MainLayout";
 import HomePage from "../../pages/home/HomePage";
-
-// import { ErrorBoundary } from "react-error-boundary";
+import SearchResult from "../../pages/search/SearchResult";
 
 const HomeRoutes = [
   {
     path: "/",
     element: <MainLayout />,
-    children: [{ path: "", element: <HomePage /> }],
+    children: [
+      { path: "", element: <HomePage /> },
+      { path: "search", element: <SearchResult /> },
+    ],
   },
 ];
 

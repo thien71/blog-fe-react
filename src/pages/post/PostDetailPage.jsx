@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostAPI from "../../apis/endpoints/posts";
@@ -103,12 +103,12 @@ const PostDetailPage = () => {
                  border-r-black group-hover:border-r-gray-700"
                 ></div>
                 <div className="absolute top-3 -left-1 rounded-full p-1 bg-white"></div>
-                <a
-                  href="#"
+                <Link
+                  to={`/search?tag=${encodeURIComponent(tag.name)}`}
                   className="block text-white text-sm group-hover:text-white"
                 >
                   {tag.name}
-                </a>
+                </Link>
               </div>
             </li>
           ))}

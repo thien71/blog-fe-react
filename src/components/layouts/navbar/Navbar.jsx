@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { useState } from "react";
 import { useCategory } from "../../../contexts/CategoryContext";
@@ -6,9 +6,19 @@ import { useCategory } from "../../../contexts/CategoryContext";
 const Navbar = ({ className }) => {
   const [search, setSearch] = useState("");
   const { categories, loading, error } = useCategory();
+  const navigate = useNavigate();
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+
+  const handleSearch = () => {
+    if (!search.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(search)}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
 
   return (
     <nav className={`flex items-center ${className}`}>
@@ -16,7 +26,10 @@ const Navbar = ({ className }) => {
         <ul className="flex items-center space-x-6 flex-nowrap min-w-max ">
           {categories.map((item, index) => (
             <li key={index} className="text-nowrap">
-              <Link to={`/${item.name}`} className="text-title">
+              <Link
+                to={`/search?category=${encodeURIComponent(item.name)}`}
+                className="text-title"
+              >
                 {item.name}
               </Link>
             </li>
@@ -29,6 +42,7 @@ const Navbar = ({ className }) => {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Tìm kiếm"
           className="text-sm font-title placeholder:font-summary px-2 py-1 outline-none border-none w-24 transition"
         />
