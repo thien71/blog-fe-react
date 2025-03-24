@@ -1,13 +1,14 @@
 import api from "../index";
 
 const PostAPI = {
-  getAll: () => api.get("/posts"),
+  getAll: (params) => api.get("/posts", { params }),
   getBySlug: (slug) => api.get(`/posts/${slug}`),
   getById: (id) => api.get(`/posts/id/${id}`),
   getDraft: () => api.get(`/posts/draft/me`),
   getPending: () => api.get(`/admin/posts/pending`),
   getRejected: () => api.get(`/admin/posts/reject`),
-  getByAuthor: (authorId) => api.get(`/posts/author/${authorId}`),
+  getByAuthor: (authorId, params) =>
+    api.get(`/posts/author/${authorId}`, { params }),
   getLatest: (limit) =>
     api.get(limit ? `/posts/latest?limit=${limit}` : "/posts/latest"),
   getPopular: (limit) =>

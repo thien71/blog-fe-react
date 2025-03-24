@@ -10,7 +10,6 @@ const CategoryPosts = () => {
     data: categories,
     loading,
     error,
-    refetch: fetchData,
   } = useFetchAPI(PostAPI.getRandomByCategory, []);
 
   if (loading) return <p>Loading...</p>;

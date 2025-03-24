@@ -9,13 +9,13 @@ import {
   CategoryTagSearchBar,
   CategoryTagTableActions,
 } from "../../components";
-
 import useModal from "../../hooks/useModal";
-import usePagination from "../../hooks/usePagination";
 
 const TagManagement = () => {
   const [tags, setTags] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     isOpen: isEditOpen,
@@ -35,23 +35,13 @@ const TagManagement = () => {
     closeModal: closeConfirmModal,
   } = useModal();
 
-  const filteredTags = tags.filter((tag) =>
-    tag.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const {
-    currentPage: page,
-    setCurrentPage: setPage,
-    paginatedData: paginatedTags,
-    totalItems,
-    itemsPerPage,
-  } = usePagination(filteredTags);
-
-  const fetchTags = async () => {
+  const fetchTags = async (page = 1) => {
     try {
-      const response = await TagAPI.getAll();
+      const response = await TagAPI.getAll({ page });
       if (response.data.data?.length) {
-        setTags(response.data.data ?? []);
+        setTags(response.data.data);
+        setMeta(response.data.meta);
+        setCurrentPage(response.data.meta.current_page);
       }
     } catch (error) {
       console.error("Lỗi khi tải tags", error);
@@ -59,11 +49,19 @@ const TagManagement = () => {
   };
 
   useEffect(() => {
-    fetchTags();
+    fetchTags(1);
   }, []);
 
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handlePageChange = (page) => {
+    fetchTags(page);
+  };
+
   const handleCreated = (newTag) => {
-    setTags([newTag, ...tags]);
+    fetchTags(currentPage);
   };
 
   const handleUpdated = (updatedTag) => {
@@ -75,7 +73,7 @@ const TagManagement = () => {
   const handleConfirmAction = async () => {
     try {
       await TagAPI.delete(confirmTag.id);
-      fetchTags();
+      fetchTags(currentPage);
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     }
@@ -102,7 +100,7 @@ const TagManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedTags.map((tag) => (
+          {filteredTags.map((tag) => (
             <tr key={tag.id} className="text-center">
               <td className="border p-2">{tag.id}</td>
               <td className="border p-2">{tag.name}</td>
@@ -118,34 +116,42 @@ const TagManagement = () => {
         </tbody>
       </Table>
 
-      <Pagination
-        total={totalItems}
-        perPage={itemsPerPage}
-        currentPage={page}
-        onPageChange={setPage}
-      />
+      {meta && (
+        <Pagination
+          total={meta.total}
+          perPage={meta.per_page}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
+      )}
 
-      <EditTagModal
-        isOpen={isEditOpen}
-        tag={selectedTag}
-        onClose={() => closeEditModal(false)}
-        onUpdated={handleUpdated}
-      />
+      {isEditOpen && (
+        <EditTagModal
+          isOpen={isEditOpen}
+          tag={selectedTag}
+          onClose={() => closeEditModal(false)}
+          onUpdated={handleUpdated}
+        />
+      )}
 
-      <CreateTagModal
-        isOpen={isCreateOpen}
-        onClose={() => closeCreateModal(false)}
-        onCreated={handleCreated}
-      />
+      {isCreateOpen && (
+        <CreateTagModal
+          isOpen={isCreateOpen}
+          onClose={() => closeCreateModal(false)}
+          onCreated={handleCreated}
+        />
+      )}
 
-      <ConfirmModal
-        isOpen={isConfirmOpen}
-        title={"Xác nhận xoá tag"}
-        message={`Bạn có chắc chắn muốn xoá `}
-        object={confirmTag?.name}
-        onConfirm={handleConfirmAction}
-        onCancel={() => closeConfirmModal(false)}
-      />
+      {isConfirmOpen && (
+        <ConfirmModal
+          isOpen={isConfirmOpen}
+          title={"Xác nhận xoá tag"}
+          message={`Bạn có chắc chắn muốn xoá `}
+          object={confirmTag?.name}
+          onConfirm={handleConfirmAction}
+          onCancel={() => closeConfirmModal(false)}
+        />
+      )}
     </div>
   );
 };

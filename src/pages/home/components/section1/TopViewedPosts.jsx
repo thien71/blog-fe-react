@@ -2,27 +2,18 @@ import { useEffect, useState } from "react";
 import PostAPI from "../../../../apis/endpoints/posts";
 import { PostItem } from "../../../../components/index";
 import { Link } from "react-router-dom";
+import useFetchAPI from "../../../../hooks/useFetchAPI";
 
 const TopViewedPosts = () => {
-  const [posts, setPosts] = useState([]);
+  const { data: posts, loading, error } = useFetchAPI(PostAPI.getPopular);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await PostAPI.getPopular();
-        if (response.data.data?.length) {
-          setPosts(response.data.data);
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải bài viết phổ biến:", error);
-      }
-    })();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      {posts.map((post) => (
-        <Link to={`/posts/${post.slug}`}>
+      {posts.map((post, index) => (
+        <Link to={`/posts/${post.slug}`} key={index}>
           <PostItem
             key={post.id}
             post={post}

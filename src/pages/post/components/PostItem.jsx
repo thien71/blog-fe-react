@@ -16,7 +16,7 @@ const PostItem = ({ className, post }) => {
             {post?.title}
           </h3>
           <p className="text-summary font-summary text-sm line-clamp-2 leading-relaxed">
-            {post?.title}
+            {post?.summary}
           </p>
         </div>
       </Link>

@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 const adminMenu = [
   { path: "/admin/dashboard", label: "Trang chủ" },
   {
-    path: "/admin/posts",
+    // path: "/admin/posts",
     label: "Quản lí bài viết",
     subItems: [
       { path: "/admin/posts", label: "Đang công khai" },

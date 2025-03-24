@@ -30,10 +30,7 @@ const PostItem = ({
   );
 
   return (
-    <div
-      className={`${className} cursor-pointer flex items-start gap-3`}
-      // onClick={() => navigate(`/posts/${post.slug}`)}
-    >
+    <div className={`${className} cursor-pointer flex items-start gap-3`}>
       {layout === "image-left-summary" && (
         <div className="flex w-full gap-3">
           {post.thumbnail && renderImage("left")}

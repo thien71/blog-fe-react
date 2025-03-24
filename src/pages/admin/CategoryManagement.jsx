@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import useModal from "../../hooks/useModal";
-import usePagination from "../../hooks/usePagination";
 import CategoryAPI from "../../apis/endpoints/categories";
 import {
   Table,
@@ -14,7 +13,9 @@ import {
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     isOpen: isEditOpen,
@@ -34,23 +35,13 @@ const CategoryManagement = () => {
     closeModal: closeConfirmModal,
   } = useModal();
 
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const {
-    currentPage: page,
-    setCurrentPage: setPage,
-    paginatedData: paginatedCategories,
-    totalItems,
-    itemsPerPage,
-  } = usePagination(filteredCategories);
-
-  const fetchCategories = async () => {
+  const fetchCategories = async (page = 1) => {
     try {
-      const response = await CategoryAPI.getAll();
+      const response = await CategoryAPI.getAll({ page });
       if (response.data.data?.length) {
-        setCategories(response.data.data ?? []);
+        setCategories(response.data.data);
+        setMeta(response.data.meta);
+        setCurrentPage(response.data.meta.current_page);
       }
     } catch (error) {
       console.error("Lỗi khi tải categories", error);
@@ -58,11 +49,19 @@ const CategoryManagement = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(1);
   }, []);
 
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handlePageChange = (page) => {
+    fetchCategories(page);
+  };
+
   const handleCreated = (newCategory) => {
-    setCategories([newCategory, ...categories]);
+    fetchCategories(currentPage);
   };
 
   const handleUpdated = (updatedCategory) => {
@@ -76,7 +75,7 @@ const CategoryManagement = () => {
   const handleConfirmAction = async () => {
     try {
       await CategoryAPI.delete(confirmCategory.id);
-      fetchCategories();
+      fetchCategories(currentPage);
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     }
@@ -102,7 +101,7 @@ const CategoryManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedCategories.map((category) => (
+          {filteredCategories.map((category) => (
             <tr key={category.id} className="text-center">
               <td className="border p-2">{category.id}</td>
               <td className="border p-2">{category.name}</td>
@@ -118,34 +117,42 @@ const CategoryManagement = () => {
         </tbody>
       </Table>
 
-      <Pagination
-        total={totalItems}
-        perPage={itemsPerPage}
-        currentPage={page}
-        onPageChange={setPage}
-      />
+      {meta && (
+        <Pagination
+          total={meta.total}
+          perPage={meta.per_page}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
+      )}
 
-      <EditCategoryModal
-        isOpen={isEditOpen}
-        category={selectedCategory}
-        onClose={() => closeEditModal(false)}
-        onUpdated={handleUpdated}
-      />
+      {isEditOpen && (
+        <EditCategoryModal
+          isOpen={isEditOpen}
+          category={selectedCategory}
+          onClose={() => closeEditModal(false)}
+          onUpdated={handleUpdated}
+        />
+      )}
 
-      <CreateCategoryModal
-        isOpen={isCreateOpen}
-        onClose={() => closeCreateModal(false)}
-        onCreated={handleCreated}
-      />
+      {isCreateOpen && (
+        <CreateCategoryModal
+          isOpen={isCreateOpen}
+          onClose={() => closeCreateModal(false)}
+          onCreated={handleCreated}
+        />
+      )}
 
-      <ConfirmModal
-        isOpen={isConfirmOpen}
-        title={"Xác nhận xoá danh mục"}
-        message={`Bạn có chắc chắn muốn xoá `}
-        object={confirmCategory?.name}
-        onConfirm={handleConfirmAction}
-        onCancel={() => closeConfirmModal(false)}
-      />
+      {isConfirmOpen && (
+        <ConfirmModal
+          isOpen={isConfirmOpen}
+          title={"Xác nhận xoá danh mục"}
+          message={`Bạn có chắc chắn muốn xoá `}
+          object={confirmCategory?.name}
+          onConfirm={handleConfirmAction}
+          onCancel={() => closeConfirmModal(false)}
+        />
+      )}
     </div>
   );
 };

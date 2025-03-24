@@ -1,7 +1,7 @@
 import api from "../index";
 
 const CategoryAPI = {
-  getAll: () => api.get("/categories"),
+  getAll: (params) => api.get("/categories", { params }),
   getById: (id) => api.get(`/categories/${id}`),
   create: (categoryData) => api.post("/categories", categoryData),
   update: (id, categoryData) => api.put(`/categories/${id}`, categoryData),

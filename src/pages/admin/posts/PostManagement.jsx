@@ -11,14 +11,11 @@ import {
   CategoryTagTableActions,
   PostManagementHeader,
 } from "../../../components";
-
 import useModal from "../../../hooks/useModal";
-import usePagination from "../../../hooks/usePagination";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const PostManagement = () => {
   const { user, loading } = useAuth();
-
   const [filters, setFilters] = useState({
     search: "",
     categoryFilter: "",
@@ -27,8 +24,9 @@ const PostManagement = () => {
     viewMinFilter: "",
     viewMaxFilter: "",
   });
-
   const [posts, setPosts] = useState([]);
+  const [meta, setMeta] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const {
@@ -88,61 +86,66 @@ const PostManagement = () => {
     viewMaxFilter,
   ]);
 
-  const {
-    currentPage: page,
-    setCurrentPage: setPage,
-    paginatedData: paginatedPosts,
-    totalItems,
-    itemsPerPage,
-  } = usePagination(filteredPosts, 5);
+  const fetchPosts = useCallback(
+    async (page = 1) => {
+      if (loading || !user) return;
 
-  const fetchPosts = useCallback(async () => {
-    if (loading || !user) return;
+      try {
+        let response;
+        if (user.role === "admin") {
+          response = await PostAPI.getAll({ page });
+          console.log("vào đấy getALL");
+        } else if (user.role === "author") {
+          response = await PostAPI.getByAuthor(user.id, { page });
+          console.log("vào đấy getByAuthor", user);
+        }
 
-    try {
-      let response;
-      if (user.role === "admin") {
-        response = await PostAPI.getAll();
-      } else if (user.role === "author") {
-        response = await PostAPI.getByAuthor(user.id);
+        if (response?.data?.data?.length) {
+          setPosts(response.data.data);
+          setMeta(response.data.meta);
+          setCurrentPage(response.data.meta.current_page);
+        } else {
+          setPosts([]);
+          setMeta(response.data.meta);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải posts", error);
       }
-
-      if (response?.data?.data?.length) {
-        setPosts(response.data.data);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tải posts", error);
-    }
-  }, [user, loading]);
+    },
+    [user, loading]
+  );
 
   useEffect(() => {
     if (!loading) {
-      fetchPosts();
+      fetchPosts(1);
     }
   }, [fetchPosts, loading]);
 
   const handleEdit = useCallback(
     (postId) => {
       if (!user) return;
-
       const basePath = user.role === "admin" ? "/admin" : "/author";
       navigate(`${basePath}/posts/edit/${postId}`);
     },
     [navigate, user]
   );
 
+  const handlePageChange = (page) => {
+    fetchPosts(page);
+  };
+
   const handleConfirmAction = useCallback(async () => {
     if (!postToConfirm) return;
 
     try {
       await PostAPI.delete(postToConfirm.id);
-      await fetchPosts();
+      await fetchPosts(currentPage);
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     } finally {
       closeConfirmModal();
     }
-  }, [postToConfirm, closeConfirmModal, fetchPosts]);
+  }, [postToConfirm, closeConfirmModal, fetchPosts, currentPage]);
 
   const renderStatus = useCallback((status) => {
     return status === "published" ? (
@@ -173,7 +176,6 @@ const PostManagement = () => {
         setViewMinFilter={(value) => updateFilter("viewMinFilter", value)}
         viewMaxFilter={viewMaxFilter}
         setViewMaxFilter={(value) => updateFilter("viewMaxFilter", value)}
-        // Chỉ hiển thị filter author nếu là admin
         visibleFilters={{
           category: true,
           author: user?.role === "admin",
@@ -205,7 +207,7 @@ const PostManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedPosts.map((post) => (
+              {filteredPosts.map((post) => (
                 <tr key={post.id} className="text-center">
                   <td className="border p-2">{post.id}</td>
                   <td className="border p-2 max-w-20">
@@ -227,9 +229,7 @@ const PostManagement = () => {
                         {format(
                           new Date(post.updated_at),
                           " HH:mm - dd/MM/yyyy",
-                          {
-                            locale: vi,
-                          }
+                          { locale: vi }
                         )}
                       </p>
                     )}
@@ -255,12 +255,14 @@ const PostManagement = () => {
             </tbody>
           </Table>
 
-          <Pagination
-            total={totalItems}
-            perPage={itemsPerPage}
-            currentPage={page}
-            onPageChange={setPage}
-          />
+          {meta && (
+            <Pagination
+              total={meta.total}
+              perPage={meta.per_page}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          )}
         </>
       )}
 
