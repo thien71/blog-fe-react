@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
@@ -10,46 +10,29 @@ import {
   PostManagementHeader,
   Input,
 } from "../../../components";
-
 import { FiEdit } from "react-icons/fi";
-import usePagination from "../../../hooks/usePagination";
+import useServerPagination from "../../../hooks/useServerPagination";
 
 const PostDraft = () => {
   const [search, setSearch] = useState("");
-  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
 
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch =
-      !search ||
-      post.title.toLowerCase().includes(search.toLowerCase()) ||
-      post.summary.toLowerCase().includes(search.toLowerCase());
-
-    return matchesSearch;
-  });
+  const fetchDrafts = useCallback(async (page = 1) => {
+    const response = await PostAPI.getDraft({ page });
+    return {
+      data: response?.data?.data || [],
+      meta: response?.data?.meta || null,
+    };
+  }, []);
 
   const {
+    data: paginatedPosts,
+    meta,
     currentPage: page,
     setCurrentPage: setPage,
-    paginatedData: paginatedPosts,
-    totalItems,
-    itemsPerPage,
-  } = usePagination(filteredPosts, 5);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await PostAPI.getDraft();
-      if (response.data.data?.length) {
-        setPosts(response.data.data);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tải posts", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+    loading: paginationLoading,
+    fetchData,
+  } = useServerPagination(fetchDrafts, 1);
 
   const handleEdit = (postId) => {
     const userRole = localStorage.getItem("role");
@@ -57,11 +40,13 @@ const PostDraft = () => {
     navigate(`${basePath}/posts/edit/${postId}`);
   };
 
-  // const handleEdit = () => {
-  //   const userRole = localStorage.getItem("role");
-  //   const basePath = userRole === "admin" ? "/admin" : "/author";
-  //   navigate(`${basePath}/posts/edit/${paginatedPosts[page - 1].id}`);
-  // };
+  const filteredPosts = paginatedPosts.filter((post) => {
+    const matchesSearch =
+      !search ||
+      post.title.toLowerCase().includes(search.toLowerCase()) ||
+      post.summary.toLowerCase().includes(search.toLowerCase());
+    return matchesSearch;
+  });
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
@@ -75,7 +60,11 @@ const PostDraft = () => {
         />
       </div>
 
-      {posts.length === 0 ? (
+      {paginationLoading ? (
+        <div className="text-center py-10">
+          <p>Đang tải...</p>
+        </div>
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-10">
           <p>Không có bài viết nào</p>
         </div>
@@ -88,18 +77,17 @@ const PostDraft = () => {
                 <th className="border p-2">Ảnh</th>
                 <th className="border p-2">Tiêu đề</th>
                 <th className="border p-2">Danh mục</th>
-                <th className="border p-2">Tác giả</th>
                 <th className="border p-2">Ngày tạo</th>
                 <th className="border p-2">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedPosts.map((post) => (
-                <tr key={post.id} className="text-center">
+              {filteredPosts.map((post) => (
+                <tr key={post.id} className="text-center ">
                   <td className="border p-2">{post.id}</td>
-                  <td className="border p-2 max-w-20">
+                  <td className="border p-2 max-w-16">
                     <img
-                      src={post.thumbnail || "https://placehold.co/80x48"}
+                      src={post.thumbnail || "https://placehold.co/60x48"}
                       alt={post.title}
                       className="aspect-[5/3] object-cover w-full bg-gray-300 rounded-md"
                     />
@@ -108,17 +96,13 @@ const PostDraft = () => {
                     <p className="line-clamp-2">{post.title}</p>
                   </td>
                   <td className="border p-2">{post?.category?.name}</td>
-                  <td className="border p-2 min-w-40">
-                    <p className="">{post?.author?.name}</p>
-                  </td>
                   <td className="border p-2 max-w-28">
-                    <p className="">
+                    <p>
                       {format(new Date(post.created_at), "dd/MM/yyyy", {
                         locale: vi,
                       })}
                     </p>
                   </td>
-
                   <td className="border p-2">
                     <div className="flex justify-center gap-4 items-center">
                       <Button
@@ -135,12 +119,14 @@ const PostDraft = () => {
             </tbody>
           </Table>
 
-          <Pagination
-            total={totalItems}
-            perPage={itemsPerPage}
-            currentPage={page}
-            onPageChange={setPage}
-          />
+          {meta && (
+            <Pagination
+              total={meta.total}
+              perPage={meta.per_page}
+              currentPage={page}
+              onPageChange={setPage}
+            />
+          )}
         </>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
@@ -12,11 +12,10 @@ import {
   PostSearchBar,
 } from "../../components";
 
-import { FiEdit, FiEye } from "react-icons/fi";
-import usePagination from "../../hooks/usePagination";
+import { FiEdit } from "react-icons/fi";
+import useServerPagination from "../../hooks/useServerPagination";
 
 const PostRejected = () => {
-  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: "",
@@ -40,8 +39,26 @@ const PostRejected = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  const fetchRejectedPosts = useCallback(async (page = 1) => {
+    const response = await PostAPI.getRejected({ page });
+    return {
+      data: response?.data?.data || [],
+      meta: response?.data?.meta || null,
+    };
+  }, []);
+
+  const {
+    data: paginatedPosts,
+    meta,
+    currentPage: page,
+    setCurrentPage: setPage,
+    loading: paginationLoading,
+    fetchData,
+  } = useServerPagination(fetchRejectedPosts, 1);
+
+  // Lọc dữ liệu trên dữ liệu đã phân trang từ server
   const filteredPosts = useMemo(() => {
-    return posts.filter((post) => {
+    return paginatedPosts.filter((post) => {
       const matchesSearch =
         !search ||
         post.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -68,7 +85,7 @@ const PostRejected = () => {
       );
     });
   }, [
-    posts,
+    paginatedPosts,
     search,
     categoryFilter,
     authorFilter,
@@ -76,29 +93,6 @@ const PostRejected = () => {
     viewMinFilter,
     viewMaxFilter,
   ]);
-
-  const {
-    currentPage: page,
-    setCurrentPage: setPage,
-    paginatedData: paginatedPosts,
-    totalItems,
-    itemsPerPage,
-  } = usePagination(filteredPosts, 5);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await PostAPI.getRejected();
-      if (response.data.data?.length) {
-        setPosts(response.data.data);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tải posts", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const handleView = (postId) => {
     const userRole = localStorage.getItem("role");
@@ -131,7 +125,11 @@ const PostRejected = () => {
         }}
       />
 
-      {posts.length === 0 ? (
+      {paginationLoading ? (
+        <div className="text-center py-10">
+          <p>Đang tải...</p>
+        </div>
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-10">
           <p>Không có bài viết nào</p>
         </div>
@@ -150,7 +148,7 @@ const PostRejected = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedPosts.map((post) => (
+              {filteredPosts.map((post) => (
                 <tr key={post.id} className="text-center">
                   <td className="border p-2">{post.id}</td>
                   <td className="border p-2 max-w-20">
@@ -168,13 +166,12 @@ const PostRejected = () => {
                     <p>{post?.tags?.map((tag) => tag.name).join(", ")}</p>
                   </td>
                   <td className="border p-2 max-w-28">
-                    <p className="">
+                    <p>
                       {format(new Date(post.created_at), "dd/MM/yyyy", {
                         locale: vi,
                       })}
                     </p>
                   </td>
-
                   <td className="border p-2">
                     <div className="flex justify-center gap-4 items-center">
                       <Button
@@ -191,12 +188,14 @@ const PostRejected = () => {
             </tbody>
           </Table>
 
-          <Pagination
-            total={totalItems}
-            perPage={itemsPerPage}
-            currentPage={page}
-            onPageChange={setPage}
-          />
+          {meta && (
+            <Pagination
+              total={meta.total}
+              perPage={meta.per_page}
+              currentPage={page}
+              onPageChange={setPage}
+            />
+          )}
         </>
       )}
     </div>

@@ -4,9 +4,9 @@ const PostAPI = {
   getAll: (params) => api.get("/posts", { params }),
   getBySlug: (slug) => api.get(`/posts/${slug}`),
   getById: (id) => api.get(`/posts/id/${id}`),
-  getDraft: () => api.get(`/posts/draft/me`),
-  getPending: () => api.get(`/admin/posts/pending`),
-  getRejected: () => api.get(`/admin/posts/reject`),
+  getDraft: (params) => api.get(`/posts/draft/me`, { params }),
+  getPending: (params) => api.get(`/admin/posts/pending`, { params }),
+  getRejected: (params) => api.get(`/admin/posts/reject`, { params }),
   getByAuthor: (authorId, params) =>
     api.get(`/posts/author/${authorId}`, { params }),
   getLatest: (limit) =>

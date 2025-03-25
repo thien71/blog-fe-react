@@ -15,8 +15,8 @@ const DashboardSidebar = ({ menuItems }) => {
   return (
     <aside className="w-48 bg-white border-r h-screen p-3 fixed top-14 left-0 font-summary">
       <nav>
-        {menuItems.map((item) => (
-          <div key={item.path}>
+        {menuItems.map((item, index) => (
+          <div key={index}>
             {item.subItems ? (
               <>
                 <div

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostAPI from "../../apis/endpoints/posts";
 import PostItem from "./components/PostItem";
+import TagItem from "./components/TagItem";
 
 const PostDetailPage = () => {
   const { slug } = useParams();
@@ -89,32 +90,22 @@ const PostDetailPage = () => {
         ))}
       </ul>
 
-      <div className="flex items-center gap-8 pt-2 pb-4 mb-6 border-b">
-        <h5 className="text-sm font-medium text-secondary whitespace-nowrap">
-          Tags:
-        </h5>
+      {/* Tag */}
+      {post.tags.length > 0 && (
+        <div className="flex items-center gap-8 pt-2 pb-4 mb-6 border-b">
+          <h5 className="text-sm font-medium text-secondary whitespace-nowrap">
+            Tags:
+          </h5>
 
-        <ul className="flex flex-wrap gap-8 max-h-8">
-          {post.tags.map((tag) => (
-            <li key={tag.id} className="group relative">
-              <div className="relative px-4 py-[6px] bg-black flex items-center group-hover:bg-gray-700">
-                <div
-                  className="absolute top-0 left-[-16px] border-y-[16px] border-r-[16px] border-transparent
-                 border-r-black group-hover:border-r-gray-700"
-                ></div>
-                <div className="absolute top-3 -left-1 rounded-full p-1 bg-white"></div>
-                <Link
-                  to={`/search?tag=${encodeURIComponent(tag.name)}`}
-                  className="block text-white text-sm group-hover:text-white"
-                >
-                  {tag.name}
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+          <ul className="flex flex-wrap gap-8 max-h-8">
+            {post.tags.map((tag) => (
+              <TagItem tag={tag} />
+            ))}
+          </ul>
+        </div>
+      )}
 
+      {/* Posts related */}
       <div className="">
         <h5 className="text-lg font-title text-title whitespace-nowrap mb-6 border-b-2 border-primary inline-block">
           {post.category.name}
