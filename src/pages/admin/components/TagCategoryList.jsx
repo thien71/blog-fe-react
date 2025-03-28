@@ -1,6 +1,4 @@
 const TagCategoryList = ({ items }) => {
-  let count = 0;
-  console.log("items render " + count++, items);
   return (
     <div className="grid grid-cols-3 gap-2">
       {items.map((item, index) => (

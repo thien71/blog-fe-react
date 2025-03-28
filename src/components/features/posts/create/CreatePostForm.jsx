@@ -6,10 +6,10 @@ import {
   CreatePostActions,
   CreatePostSidebar,
   ConfirmModal,
-} from "../../../components";
-import PostAPI from "../../../apis/endpoints/posts";
-import useModal from "../../../hooks/useModal";
-import { useAuth } from "../../../contexts/AuthContext";
+} from "../../..";
+import PostAPI from "../../../../apis/endpoints/posts";
+import useModal from "../../../../hooks/useModal";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const CreatePostForm = () => {
   const { id } = useParams();

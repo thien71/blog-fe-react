@@ -8,15 +8,23 @@ import {
   PostSearchBar,
   Button,
   PostManagementHeader,
+  PreviewPostModal,
 } from "../../../components";
 import { TiTick } from "react-icons/ti";
 import { IoIosRemoveCircle } from "react-icons/io";
 import useServerPagination from "../../../hooks/useServerPagination";
+import useModal from "../../../hooks/useModal";
 
 const PostApprove = () => {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [authorFilter, setAuthorFilter] = useState("");
+  const [selectedPost, setSelectedPost] = useState(null);
+  const {
+    isOpen: isPreviewOpen,
+    openModal: openPreviewModal,
+    closeModal: closePreviewModal,
+  } = useModal();
 
   // Nếu API hỗ trợ filter, bạn nên truyền các tham số search, category, author vào đây
   const fetchPendingPosts = useCallback(async (page = 1) => {
@@ -70,6 +78,12 @@ const PostApprove = () => {
     }
   };
 
+  const handleView = (post) => {
+    console.log("View post:", selectedPost);
+    setSelectedPost(post);
+    openPreviewModal();
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
       <PostManagementHeader title="Duyệt bài" />
@@ -107,7 +121,11 @@ const PostApprove = () => {
             </thead>
             <tbody>
               {filteredPosts.map((post) => (
-                <tr key={post.id} className="text-center">
+                <tr
+                  key={post.id}
+                  className="text-center hover:bg-sky-50 cursor-pointer"
+                  onClick={() => handleView(post)}
+                >
                   <td className="border p-2">{post.id}</td>
                   <td className="border p-2 max-w-20">
                     <img
@@ -159,6 +177,16 @@ const PostApprove = () => {
               perPage={meta.per_page}
               currentPage={page}
               onPageChange={setPage}
+            />
+          )}
+
+          {isPreviewOpen && (
+            <PreviewPostModal
+              isOpen={isPreviewOpen}
+              onClose={closePreviewModal}
+              post={selectedPost}
+              handleReject={handleReject}
+              handleApprove={handleApprove}
             />
           )}
         </>

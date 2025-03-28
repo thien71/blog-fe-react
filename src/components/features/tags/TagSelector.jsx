@@ -14,25 +14,6 @@ const TagSelector = ({
   const [localSelectedTags, setLocalSelectedTags] = useState([]);
   const [search, setSearch] = useState("");
 
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     console.log("Mở modal, selectedTags hiện tại:", selectedTags);
-  //     setLocalSelectedTags(selectedTags);
-  //   }
-  // }, [isOpen, selectedTags]);
-
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     // console.log("Mở modal, selectedTags hiện tại:", selectedTags);
-  //     setLocalSelectedTags((prev) => {
-  //       if (JSON.stringify(prev) !== JSON.stringify(selectedTags)) {
-  //         return selectedTags;
-  //       }
-  //       return prev;
-  //     });
-  //   }
-  // }, [isOpen, selectedTags]);
-
   useEffect(() => {
     if (isOpen) {
       console.log("Mở modal, selectedTags hiện tại:", selectedTags);
@@ -51,8 +32,6 @@ const TagSelector = ({
         ? prev.filter((t) => t.value !== tag.value)
         : [...prev, tag];
 
-      console.log("🟢 Tags đã chọn sau khi click:", newTags);
-      // onTagsSelected(newTags);
       return newTags;
     });
   };

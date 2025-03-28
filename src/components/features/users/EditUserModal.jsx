@@ -55,7 +55,9 @@ const EditUserModal = ({ isOpen, onClose, user, onUpdated }) => {
 
     try {
       const response = await UserAPI.update(user.id, data);
-      onUpdated(response.data.data);
+      if (typeof onUpdated === "function") {
+        onUpdated(response.data.data);
+      }
       onClose();
     } catch (error) {
       console.error("Lỗi khi cập nhật profile:", error);

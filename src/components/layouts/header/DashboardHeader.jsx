@@ -1,12 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthAPI from "../../../apis/endpoints/auth";
-import { Avatar } from "../../common";
+import { Avatar, Logo } from "../../common";
+import EditUserModal from "../../../components/features/users/EditUserModal";
+import useModal from "../../../hooks/useModal";
 
-const DashboardHeader = ({ user }) => {
+const DashboardHeader = ({ user: initialUser }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(initialUser);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+
+  const {
+    isOpen: isEditOpen,
+    openModal: openEditModal,
+    closeModal: closeEditModal,
+  } = useModal();
 
   const handleLogout = async () => {
     try {
@@ -16,6 +25,10 @@ const DashboardHeader = ({ user }) => {
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error.response?.data || error);
     }
+  };
+
+  const handleUpdated = (updatedUser) => {
+    setUser(updatedUser);
   };
 
   useEffect(() => {
@@ -41,7 +54,7 @@ const DashboardHeader = ({ user }) => {
           to={user.role === "admin" ? "/admin/dashboard" : "/author/dashboard"}
           className="font-title hover:text-primary"
         >
-          LOGO
+          <Logo />
         </Link>
       </div>
 
@@ -72,8 +85,11 @@ const DashboardHeader = ({ user }) => {
               </p>
             </div>
             <div className="border-t">
-              <button className="w-full px-4 py-2 hover:bg-gray-100 text-left">
-                Chỉnh sửa profile
+              <button
+                className="w-full px-4 py-2 hover:bg-gray-100 text-left block hover:text-title"
+                onClick={() => openEditModal(user)}
+              >
+                Thông tin cá nhân
               </button>
               <button
                 className="w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500"
@@ -85,6 +101,15 @@ const DashboardHeader = ({ user }) => {
           </div>
         )}
       </div>
+
+      {isEditOpen && (
+        <EditUserModal
+          isOpen={isEditOpen}
+          user={user}
+          onClose={closeEditModal}
+          onUpdated={handleUpdated}
+        />
+      )}
     </header>
   );
 };
