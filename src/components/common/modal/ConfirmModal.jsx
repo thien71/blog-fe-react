@@ -17,8 +17,12 @@ const ConfirmModal = ({
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ${className}`}
+      onClick={onCancel}
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+      <div
+        className="bg-white p-6 rounded-lg shadow-lg text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-xl font-bold mb-4">{title}</h2>
         <p>
           <span>{message}</span>

@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
+import useFetchAPI from "../../hooks/useFetchAPI";
 import TagAPI from "../../apis/endpoints/tags";
 import {
   Table,
@@ -9,13 +12,18 @@ import {
   CategoryTagSearchBar,
   CategoryTagTableActions,
 } from "../../components";
-import useModal from "../../hooks/useModal";
 
 const TagManagement = () => {
   const [tags, setTags] = useState([]);
-  const [meta, setMeta] = useState(null);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, loading, error } = useFetchAPI(TagAPI.getAll);
+
+  useEffect(() => {
+    if (data) {
+      setTags(data);
+    }
+  }, [data]);
 
   const {
     isOpen: isEditOpen,
@@ -23,11 +31,15 @@ const TagManagement = () => {
     openModal: openEditModal,
     closeModal: closeEditModal,
   } = useModal();
+
+  // Modal create
   const {
     isOpen: isCreateOpen,
     openModal: openCreateModal,
     closeModal: closeCreateModal,
   } = useModal();
+
+  // Modal confirm
   const {
     isOpen: isConfirmOpen,
     selectedItem: confirmTag,
@@ -35,33 +47,20 @@ const TagManagement = () => {
     closeModal: closeConfirmModal,
   } = useModal();
 
-  const fetchTags = async (page = 1) => {
-    try {
-      const response = await TagAPI.getAll({ page });
-      if (response.data.data?.length) {
-        setTags(response.data.data);
-        setMeta(response.data.meta);
-        setCurrentPage(response.data.meta.current_page);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tải tags", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchTags(1);
-  }, []);
-
   const filteredTags = tags.filter((tag) =>
     tag.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handlePageChange = (page) => {
-    fetchTags(page);
-  };
+  const {
+    currentPage: page,
+    setCurrentPage: setPage,
+    paginatedData: paginatedTags,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredTags);
 
   const handleCreated = (newTag) => {
-    fetchTags(currentPage);
+    setTags((prev) => [newTag, ...prev]);
   };
 
   const handleUpdated = (updatedTag) => {
@@ -73,7 +72,7 @@ const TagManagement = () => {
   const handleConfirmAction = async () => {
     try {
       await TagAPI.delete(confirmTag.id);
-      fetchTags(currentPage);
+      setTags((prev) => prev.filter((tag) => tag.id !== confirmTag.id));
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     }
@@ -91,38 +90,44 @@ const TagManagement = () => {
         onAddNew={openCreateModal}
       />
 
-      <Table>
-        <thead>
-          <tr>
-            <th className="border p-2">Id</th>
-            <th className="border p-2">Tên</th>
-            <th className="border p-2">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTags.map((tag) => (
-            <tr key={tag.id} className="text-center">
-              <td className="border p-2">{tag.id}</td>
-              <td className="border p-2">{tag.name}</td>
-              <td className="border p-2">
-                <CategoryTagTableActions
-                  data={tag}
-                  onEdit={openEditModal}
-                  onDelete={openConfirmModal}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {loading ? (
+        <div>Đang tải...</div>
+      ) : error ? (
+        <div>Lỗi: {error}</div>
+      ) : (
+        <>
+          <Table>
+            <thead>
+              <tr>
+                <th className="border p-2">Id</th>
+                <th className="border p-2">Tên</th>
+                <th className="border p-2">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedTags.map((tag) => (
+                <tr key={tag.id} className="text-center">
+                  <td className="border p-2">{tag.id}</td>
+                  <td className="border p-2">{tag.name}</td>
+                  <td className="border p-2">
+                    <CategoryTagTableActions
+                      data={tag}
+                      onEdit={openEditModal}
+                      onDelete={openConfirmModal}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
 
-      {meta && (
-        <Pagination
-          total={meta.total}
-          perPage={meta.per_page}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
+          <Pagination
+            total={totalItems}
+            perPage={itemsPerPage}
+            currentPage={page}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       {isEditOpen && (
@@ -145,8 +150,8 @@ const TagManagement = () => {
       {isConfirmOpen && (
         <ConfirmModal
           isOpen={isConfirmOpen}
-          title={"Xác nhận xoá tag"}
-          message={`Bạn có chắc chắn muốn xoá `}
+          title="Xác nhận xoá tag"
+          message="Bạn có chắc chắn muốn xoá "
           object={confirmTag?.name}
           onConfirm={handleConfirmAction}
           onCancel={() => closeConfirmModal(false)}

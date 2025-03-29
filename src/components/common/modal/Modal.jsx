@@ -45,9 +45,13 @@ const Modal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20"
+      onClick={onClose}
+    >
       <div
         className={`bg-white p-6 rounded-lg shadow-lg ${sizeClasses[size]} ${className}`}
+        onClick={(e) => e.stopPropagation()}
       >
         {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
         {children}

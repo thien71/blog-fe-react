@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { IoIosAddCircleOutline, IoMdClose } from "react-icons/io";
 import { Button, Modal } from "../../common";
 import { FaTags } from "react-icons/fa";
 import useModal from "../../../hooks/useModal";
@@ -76,6 +75,7 @@ const TagSelector = ({
         confirmText="Xác nhận"
         onConfirm={handleConfirmSelection}
         className={"relative"}
+        size="lg"
       >
         <input
           type="text"
@@ -85,7 +85,7 @@ const TagSelector = ({
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="grid grid-cols-2 gap-2 overflow-y-auto max-h-40">
+        <div className="grid grid-cols-4 gap-2 overflow-y-auto max-h-600">
           {tags
             .filter((tag) =>
               tag.label.toLowerCase().includes(search.toLowerCase())

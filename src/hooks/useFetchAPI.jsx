@@ -1,11 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 
-/**
- * useFetchAPI - Custom hook để gọi API GET
- * @param {Function} apiMethod - Hàm gọi API từ UserAPI, PostAPI, TagAPI, CategoryAPI,...
- * @param {Array} params - Các tham số truyền vào hàm API (nếu có)
- * @returns {Object} - { data, loading, error, refetch }
- */
 const useFetchAPI = (apiMethod, params = []) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);

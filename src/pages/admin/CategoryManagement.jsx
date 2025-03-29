@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import useModal from "../../hooks/useModal";
+import usePagination from "../../hooks/usePagination";
+import useFetchAPI from "../../hooks/useFetchAPI";
 import CategoryAPI from "../../apis/endpoints/categories";
 import {
   Table,
@@ -13,21 +15,32 @@ import {
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
-  const [meta, setMeta] = useState(null);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
 
+  const { data, loading, error } = useFetchAPI(CategoryAPI.getAll);
+
+  useEffect(() => {
+    if (data) {
+      setCategories(data);
+    }
+  }, [data]);
+
+  // Modal edit
   const {
     isOpen: isEditOpen,
     selectedItem: selectedCategory,
     openModal: openEditModal,
     closeModal: closeEditModal,
   } = useModal();
+
+  // Modal create
   const {
     isOpen: isCreateOpen,
     openModal: openCreateModal,
     closeModal: closeCreateModal,
   } = useModal();
+
+  // Modal confirm
   const {
     isOpen: isConfirmOpen,
     selectedItem: confirmCategory,
@@ -35,33 +48,20 @@ const CategoryManagement = () => {
     closeModal: closeConfirmModal,
   } = useModal();
 
-  const fetchCategories = async (page = 1) => {
-    try {
-      const response = await CategoryAPI.getAll({ page });
-      if (response.data.data?.length) {
-        setCategories(response.data.data);
-        setMeta(response.data.meta);
-        setCurrentPage(response.data.meta.current_page);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tải categories", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategories(1);
-  }, []);
-
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handlePageChange = (page) => {
-    fetchCategories(page);
-  };
+  const {
+    currentPage: page,
+    setCurrentPage: setPage,
+    paginatedData: paginatedCategories,
+    totalItems,
+    itemsPerPage,
+  } = usePagination(filteredCategories);
 
   const handleCreated = (newCategory) => {
-    fetchCategories(currentPage);
+    setCategories((prev) => [newCategory, ...prev]);
   };
 
   const handleUpdated = (updatedCategory) => {
@@ -75,7 +75,9 @@ const CategoryManagement = () => {
   const handleConfirmAction = async () => {
     try {
       await CategoryAPI.delete(confirmCategory.id);
-      fetchCategories(currentPage);
+      setCategories((prev) =>
+        prev.filter((category) => category.id !== confirmCategory.id)
+      );
     } catch (error) {
       console.error("Lỗi khi xác nhận hành động", error);
     }
@@ -92,38 +94,44 @@ const CategoryManagement = () => {
         onAddNew={openCreateModal}
       />
 
-      <Table>
-        <thead>
-          <tr>
-            <th className="border p-2">Id</th>
-            <th className="border p-2">Tên</th>
-            <th className="border p-2">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredCategories.map((category) => (
-            <tr key={category.id} className="text-center">
-              <td className="border p-2">{category.id}</td>
-              <td className="border p-2">{category.name}</td>
-              <td className="border p-2">
-                <CategoryTagTableActions
-                  data={category}
-                  onEdit={openEditModal}
-                  onDelete={openConfirmModal}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {loading ? (
+        <div>Đang tải...</div>
+      ) : error ? (
+        <div>Lỗi: {error}</div>
+      ) : (
+        <>
+          <Table>
+            <thead>
+              <tr>
+                <th className="border p-2">Id</th>
+                <th className="border p-2">Tên</th>
+                <th className="border p-2">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedCategories.map((category) => (
+                <tr key={category.id} className="text-center">
+                  <td className="border p-2">{category.id}</td>
+                  <td className="border p-2">{category.name}</td>
+                  <td className="border p-2">
+                    <CategoryTagTableActions
+                      data={category}
+                      onEdit={openEditModal}
+                      onDelete={openConfirmModal}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
 
-      {meta && (
-        <Pagination
-          total={meta.total}
-          perPage={meta.per_page}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
+          <Pagination
+            total={totalItems}
+            perPage={itemsPerPage}
+            currentPage={page}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       {isEditOpen && (
@@ -146,8 +154,8 @@ const CategoryManagement = () => {
       {isConfirmOpen && (
         <ConfirmModal
           isOpen={isConfirmOpen}
-          title={"Xác nhận xoá danh mục"}
-          message={`Bạn có chắc chắn muốn xoá `}
+          title="Xác nhận xoá danh mục"
+          message="Bạn có chắc chắn muốn xoá "
           object={confirmCategory?.name}
           onConfirm={handleConfirmAction}
           onCancel={() => closeConfirmModal(false)}
