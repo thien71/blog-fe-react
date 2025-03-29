@@ -10,7 +10,7 @@ const DetailPostTag = ({ tags, className }) => {
 
       <ul className="flex flex-wrap gap-8 max-h-8">
         {tags.map((tag) => (
-          <TagItem tag={tag} />
+          <TagItem tag={tag} key={tag.id} />
         ))}
       </ul>
     </div>

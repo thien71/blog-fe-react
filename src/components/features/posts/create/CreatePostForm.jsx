@@ -25,10 +25,9 @@ const CreatePostForm = () => {
     tag: [],
     thumbnail: null,
   });
-  const [originalData, setOriginalData] = useState(null);
+  const [originalData, setOriginalData] = useState({});
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
-  const [hasEdited, setHasEdited] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -55,7 +54,7 @@ const CreatePostForm = () => {
           content: postData.content,
           category_id: postData.category?.id || "",
           tag: postData.tags.map((tag) => ({ label: tag.name, value: tag.id })),
-          thumbnail: null,
+          thumbnail: postData.thumbnail,
         };
 
         setFormData(formattedData);
@@ -79,7 +78,6 @@ const CreatePostForm = () => {
 
     setFormData((prev) => {
       if (prev[name] === value) return prev;
-      setHasEdited(true);
       return { ...prev, [name]: value };
     });
   };
@@ -87,7 +85,6 @@ const CreatePostForm = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      setHasEdited(true);
       setThumbnail(selectedFile);
       handleChange("thumbnail", selectedFile);
 
@@ -99,9 +96,27 @@ const CreatePostForm = () => {
     }
   };
 
+  // Hàm chuẩn hóa dữ liệu, ví dụ xử lý newline cho content
+  const normalizeData = (data) => {
+    return {
+      ...data,
+      // Nếu content có giá trị, thay thế "\r\n" bằng "\n" và trim nếu cần
+      content: data.content
+        ? data.content.replace(/\r\n/g, "\n").trim()
+        : data.content,
+      title: data.title ? data.title.trim() : data.title,
+      category_id: data.category_id,
+      tag: data.tag,
+      thumbnail: data.thumbnail,
+    };
+  };
+
   const isFormChanged = () => {
+    if (!originalData) return false;
+    const normalizedOriginal = normalizeData(originalData);
+    const normalizedForm = normalizeData(formData);
     return (
-      hasEdited && JSON.stringify(formData) !== JSON.stringify(originalData)
+      JSON.stringify(normalizedForm) !== JSON.stringify(normalizedOriginal)
     );
   };
 
@@ -178,7 +193,7 @@ const CreatePostForm = () => {
 
       if (response.data?.data) {
         setOriginalData({ ...formData });
-        setHasEdited(false);
+        // setHasEdited(false);
         setThumbnail(null);
         return true;
       } else {
