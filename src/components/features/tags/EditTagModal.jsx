@@ -1,12 +1,14 @@
 import { Modal, CategoryTagForm } from "../..";
 import TagAPI from "../../../apis/endpoints/tags";
 import useForm from "../../../hooks/useForm";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
   const { formData, handleChange, resetForm, loading, setLoading } = useForm({
     name: tag?.name || "",
   });
+
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -27,6 +29,7 @@ const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
       onClose();
     } catch (error) {
       console.error("Lỗi khi cập nhật tag:", error);
+      setErrorMsg("Tag đã tồn tại");
     } finally {
       setLoading(false);
     }
@@ -39,7 +42,12 @@ const EditTagModal = ({ isOpen, onClose, tag, onUpdated }) => {
       onClose={onClose}
       onConfirm={handleSubmit}
     >
-      <CategoryTagForm formData={formData} handleChange={handleChange} />
+      <CategoryTagForm
+        formData={formData}
+        handleChange={handleChange}
+        onEnter={handleSubmit}
+        errorMsg={errorMsg}
+      />
     </Modal>
   );
 };

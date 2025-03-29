@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Modal, CategoryTagForm } from "../..";
 import CategoryAPI from "../../../apis/endpoints/categories";
 import useForm from "../../../hooks/useForm";
@@ -6,6 +7,8 @@ const CreateCategoryModal = ({ isOpen, onClose, onCreated }) => {
   const { formData, handleChange, resetForm, loading, setLoading } = useForm({
     name: "",
   });
+
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -16,6 +19,7 @@ const CreateCategoryModal = ({ isOpen, onClose, onCreated }) => {
       onClose();
     } catch (error) {
       console.error("Lỗi khi tạo category:", error);
+      setErrorMsg("Danh mục đã tồn tại");
     } finally {
       setLoading(false);
     }
@@ -28,7 +32,12 @@ const CreateCategoryModal = ({ isOpen, onClose, onCreated }) => {
       onClose={onClose}
       onConfirm={handleSubmit}
     >
-      <CategoryTagForm formData={formData} handleChange={handleChange} />
+      <CategoryTagForm
+        formData={formData}
+        handleChange={handleChange}
+        onEnter={handleSubmit}
+        errorMsg={errorMsg}
+      />
     </Modal>
   );
 };

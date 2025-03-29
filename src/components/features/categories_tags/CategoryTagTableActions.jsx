@@ -10,9 +10,8 @@ const CategoryTagTableActions = ({ data, onEdit, onDelete }) => {
         className="border-blue-500 text-hover hover:bg-blue-200 block"
         onClick={(e) => {
           e.stopPropagation();
-          onEdit();
+          onEdit(data);
         }}
-        //onClick={() => onEdit(data)}
       >
         <FiEdit />
       </Button>
@@ -23,7 +22,6 @@ const CategoryTagTableActions = ({ data, onEdit, onDelete }) => {
           e.stopPropagation();
           onDelete(data);
         }}
-        //onClick={() => onDelete(data)}
       >
         <MdDeleteForever />
       </Button>
