@@ -14,7 +14,7 @@ const PreviewPostModal = ({ onClose, post, handleReject, handleApprove }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg w-[800px] max-h-[90vh] flex flex-col"
+        className="bg-white rounded-lg shadow-lg w-[800px] max-h-[90vh] flex flex-col py-2"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-white z-10 p-4 border-b">
@@ -29,39 +29,41 @@ const PreviewPostModal = ({ onClose, post, handleReject, handleApprove }) => {
             </div>
           )}
         </div>
+        {handleReject && (
+          <div className="sticky bottom-0 bg-white z-10 px-4 pt-2 border-t">
+            <div className="flex justify-between items-center">
+              <Button
+                variant="outline"
+                className="border-transparent text-hover hover:bg-blue-200"
+                onClick={onClose}
+              >
+                <IoIosArrowBack size={24} />
+              </Button>
 
-        <div className="sticky bottom-0 bg-white z-10 p-4 border-t">
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              className="border-transparent text-hover hover:bg-blue-200"
-              onClick={onClose}
-            >
-              <IoIosArrowBack size={24} />
-            </Button>
-            <div className="flex justify-center gap-4 items-center">
-              <Button
-                variant="danger"
-                className="border-blue-500 text-hover hover:bg-blue-200 block"
-                onClick={() => {
-                  handleReject(post.id);
-                  onClose();
-                }}
-              >
-                <IoIosRemoveCircle size={24} />
-              </Button>
-              <Button
-                variant="success"
-                onClick={() => {
-                  handleApprove(post.id);
-                  onClose();
-                }}
-              >
-                <TiTick size={24} />
-              </Button>
+              <div className="flex justify-center gap-4 items-center">
+                <Button
+                  variant="danger"
+                  className="border-blue-500 text-hover hover:bg-blue-200 block"
+                  onClick={() => {
+                    handleReject(post.id);
+                    onClose();
+                  }}
+                >
+                  <IoIosRemoveCircle size={24} />
+                </Button>
+                <Button
+                  variant="success"
+                  onClick={() => {
+                    handleApprove(post.id);
+                    onClose();
+                  }}
+                >
+                  <TiTick size={24} />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

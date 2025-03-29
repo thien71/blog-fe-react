@@ -8,7 +8,7 @@ const DetailPostHeader = ({ post, className }) => {
   };
 
   return (
-    <div className={`flex flex-col gap-6 mb-6 ${className}`}>
+    <div className={`flex flex-col gap-6 ${className}`}>
       <div
         className={`flex items-center justify-between text-sm text-secondary`}
       >

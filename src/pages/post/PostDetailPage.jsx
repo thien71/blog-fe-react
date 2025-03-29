@@ -45,12 +45,12 @@ const PostDetailPage = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto px-6">
+    <div className="flex flex-col gap-6 max-w-3xl mx-auto px-6">
       <DetailPostHeader post={post} />
 
       <DetailPostContent post={post} />
 
-      <ul className="w-full p-4 border mb-6">
+      <ul className="w-full p-4 border">
         {relatedPosts.map((post, index) => (
           <PostItem
             key={post.id}
@@ -69,7 +69,7 @@ const PostDetailPage = () => {
         <h5 className="text-lg font-title text-title whitespace-nowrap mb-6 border-b-2 border-primary inline-block">
           {post.category.name}
         </h5>
-        <ul className="w-full mb-6">
+        <ul className="w-full">
           {relatedCategories.map((post) => {
             return <PostItem key={post.id} post={post} />;
           })}

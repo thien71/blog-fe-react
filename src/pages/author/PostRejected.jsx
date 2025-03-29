@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostAPI from "../../apis/endpoints/posts";
@@ -8,15 +7,19 @@ import {
   Pagination,
   Button,
   PostManagementHeader,
-  Input,
   PostSearchBar,
+  PreviewPostModal,
 } from "../../components";
 
 import { FiEdit } from "react-icons/fi";
 import useServerPagination from "../../hooks/useServerPagination";
+import useModal from "../../hooks/useModal";
+import { useNavigate } from "react-router-dom";
 
 const PostRejected = () => {
   const navigate = useNavigate();
+  const [selectedPost, setSelectedPost] = useState(null);
+
   const [filters, setFilters] = useState({
     search: "",
     categoryFilter: "",
@@ -34,6 +37,12 @@ const PostRejected = () => {
     viewMinFilter,
     viewMaxFilter,
   } = filters;
+
+  const {
+    isOpen: isPreviewOpen,
+    openModal: openPreviewModal,
+    closeModal: closePreviewModal,
+  } = useModal();
 
   const updateFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -94,10 +103,15 @@ const PostRejected = () => {
     viewMaxFilter,
   ]);
 
-  const handleView = (postId) => {
+  const handleEdit = (postId) => {
     const userRole = localStorage.getItem("role");
     const basePath = userRole === "admin" ? "/admin" : "/author";
     navigate(`${basePath}/posts/edit/${postId}`);
+  };
+
+  const handleView = (post) => {
+    setSelectedPost(post);
+    openPreviewModal();
   };
 
   return (
@@ -149,7 +163,11 @@ const PostRejected = () => {
             </thead>
             <tbody>
               {filteredPosts.map((post) => (
-                <tr key={post.id} className="text-center">
+                <tr
+                  key={post.id}
+                  className="text-center hover:bg-sky-50 cursor-pointer"
+                  onClick={() => handleView(post)}
+                >
                   <td className="border p-2">{post.id}</td>
                   <td className="border p-2 max-w-20">
                     <img
@@ -177,7 +195,10 @@ const PostRejected = () => {
                       <Button
                         variant="outline"
                         className="border-blue-500 text-hover hover:bg-blue-200 block"
-                        onClick={() => handleView(post.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(post.id);
+                        }}
                       >
                         <FiEdit />
                       </Button>
@@ -194,6 +215,14 @@ const PostRejected = () => {
               perPage={meta.per_page}
               currentPage={page}
               onPageChange={setPage}
+            />
+          )}
+
+          {isPreviewOpen && (
+            <PreviewPostModal
+              isOpen={isPreviewOpen}
+              onClose={closePreviewModal}
+              post={selectedPost}
             />
           )}
         </>

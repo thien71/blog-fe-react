@@ -10,12 +10,14 @@ import {
   PostSearchBar,
   CategoryTagTableActions,
   PostManagementHeader,
+  PreviewPostModal,
 } from "../../../components";
 import useModal from "../../../hooks/useModal";
 import { useAuth } from "../../../contexts/AuthContext";
 import useServerPagination from "../../../hooks/useServerPagination";
 
 const PostManagement = () => {
+  const [selectedPost, setSelectedPost] = useState(null);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -63,6 +65,12 @@ const PostManagement = () => {
     selectedItem: postToConfirm,
     openModal: openConfirmModal,
     closeModal: closeConfirmModal,
+  } = useModal();
+
+  const {
+    isOpen: isPreviewOpen,
+    openModal: openPreviewModal,
+    closeModal: closePreviewModal,
   } = useModal();
 
   const {
@@ -139,6 +147,11 @@ const PostManagement = () => {
     );
   }, []);
 
+  const handleView = (post) => {
+    setSelectedPost(post);
+    openPreviewModal();
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md min-h-[calc(100vh-80px)]">
       <PostManagementHeader />
@@ -194,7 +207,11 @@ const PostManagement = () => {
                 </thead>
                 <tbody>
                   {filteredPosts.map((post) => (
-                    <tr key={post.id} className="text-center">
+                    <tr
+                      key={post.id}
+                      className="text-center hover:bg-sky-50 cursor-pointer"
+                      onClick={() => handleView(post)}
+                    >
                       <td className="border p-2">{post.id}</td>
                       <td className="border p-2 max-w-20">
                         <img
@@ -261,6 +278,14 @@ const PostManagement = () => {
               message="Bạn có chắc chắn muốn xoá bài viết này"
               onConfirm={handleConfirmAction}
               onCancel={closeConfirmModal}
+            />
+          )}
+
+          {isPreviewOpen && (
+            <PreviewPostModal
+              isOpen={isPreviewOpen}
+              onClose={closePreviewModal}
+              post={selectedPost}
             />
           )}
         </>

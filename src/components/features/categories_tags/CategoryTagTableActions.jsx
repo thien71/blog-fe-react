@@ -8,12 +8,23 @@ const CategoryTagTableActions = ({ data, onEdit, onDelete }) => {
       <Button
         variant="outline"
         className="border-blue-500 text-hover hover:bg-blue-200 block"
-        onClick={() => onEdit(data)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
+        //onClick={() => onEdit(data)}
       >
         <FiEdit />
       </Button>
 
-      <Button variant="danger" onClick={() => onDelete(data)}>
+      <Button
+        variant="danger"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(data);
+        }}
+        //onClick={() => onDelete(data)}
+      >
         <MdDeleteForever />
       </Button>
     </div>

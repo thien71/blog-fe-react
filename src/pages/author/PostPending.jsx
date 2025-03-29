@@ -8,14 +8,16 @@ import {
   Pagination,
   Button,
   PostManagementHeader,
-  Input,
   PostSearchBar,
+  PreviewPostModal,
 } from "../../components";
 import { FiEye } from "react-icons/fi";
 import useServerPagination from "../../hooks/useServerPagination";
+import useModal from "../../hooks/useModal";
 
 const PostPending = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -34,6 +36,12 @@ const PostPending = () => {
     viewMinFilter,
     viewMaxFilter,
   } = filters;
+
+  const {
+    isOpen: isPreviewOpen,
+    openModal: openPreviewModal,
+    closeModal: closePreviewModal,
+  } = useModal();
 
   const updateFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -94,10 +102,9 @@ const PostPending = () => {
     viewMaxFilter,
   ]);
 
-  const handleView = (postId) => {
-    const userRole = localStorage.getItem("role");
-    const basePath = userRole === "admin" ? "/admin" : "/author";
-    navigate(`${basePath}/posts/view/${postId}`);
+  const handleView = (post) => {
+    setSelectedPost(post);
+    openPreviewModal();
   };
 
   return (
@@ -149,7 +156,11 @@ const PostPending = () => {
             </thead>
             <tbody>
               {filteredPosts.map((post) => (
-                <tr key={post.id} className="text-center">
+                <tr
+                  key={post.id}
+                  className="text-center hover:bg-sky-50 cursor-pointer"
+                  onClick={() => handleView(post)}
+                >
                   <td className="border p-2">{post.id}</td>
                   <td className="border p-2 max-w-20">
                     <img
@@ -194,6 +205,13 @@ const PostPending = () => {
               perPage={meta.per_page}
               currentPage={page}
               onPageChange={setPage}
+            />
+          )}
+          {isPreviewOpen && (
+            <PreviewPostModal
+              isOpen={isPreviewOpen}
+              onClose={closePreviewModal}
+              post={selectedPost}
             />
           )}
         </>

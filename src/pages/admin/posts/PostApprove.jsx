@@ -79,7 +79,6 @@ const PostApprove = () => {
   };
 
   const handleView = (post) => {
-    console.log("View post:", selectedPost);
     setSelectedPost(post);
     openPreviewModal();
   };
@@ -153,14 +152,20 @@ const PostApprove = () => {
                       <Button
                         variant="danger"
                         className="border-blue-500 text-hover hover:bg-blue-200 block"
-                        onClick={() => handleReject(post.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReject(post.id);
+                        }}
                       >
                         <IoIosRemoveCircle size={24} />
                       </Button>
 
                       <Button
                         variant="success"
-                        onClick={() => handleApprove(post.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApprove(post.id);
+                        }}
                       >
                         <TiTick size={24} />
                       </Button>

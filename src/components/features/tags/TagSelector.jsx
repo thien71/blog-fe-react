@@ -85,7 +85,7 @@ const TagSelector = ({
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="grid grid-cols-4 gap-2 overflow-y-auto max-h-600">
+        <div className="grid grid-cols-4 gap-2 overflow-y-auto max-h-[400px]">
           {tags
             .filter((tag) =>
               tag.label.toLowerCase().includes(search.toLowerCase())

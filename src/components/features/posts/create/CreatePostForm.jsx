@@ -125,7 +125,7 @@ const CreatePostForm = () => {
 
       if (result) {
         closeModal();
-        navigate(getRedirectPath("draft"));
+        navigate(-1);
       } else {
         console.error("Lưu thất bại, không điều hướng.");
       }
@@ -193,7 +193,27 @@ const CreatePostForm = () => {
     }
   };
 
+  const validateForm = () => {
+    const { title, content, category_id } = formData;
+    if (
+      !title.trim() ||
+      !content.trim() ||
+      !category_id ||
+      (!thumbnail && !thumbnailPreview)
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      alert(
+        "Vui lòng điền đầy đủ các trường bắt buộc: Tiêu đề, Nội dung, Danh mục và Thumbnail!"
+      );
+      return;
+    }
+
     setSubmitLoading(true);
 
     try {
