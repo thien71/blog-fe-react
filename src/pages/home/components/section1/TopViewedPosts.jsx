@@ -1,15 +1,7 @@
-import { useEffect, useState } from "react";
-import PostAPI from "../../../../apis/endpoints/posts";
 import { PostItem } from "../../../../components/index";
 import { Link } from "react-router-dom";
-import useFetchAPI from "../../../../hooks/useFetchAPI";
 
-const TopViewedPosts = () => {
-  const { data: posts, loading, error } = useFetchAPI(PostAPI.getPopular);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+const TopViewedPosts = ({ data: posts }) => {
   return (
     <div className="grid grid-cols-3 gap-4">
       {posts.map((post, index) => (

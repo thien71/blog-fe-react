@@ -3,11 +3,18 @@ import PostAPI from "../../../apis/endpoints/posts";
 import { PostItem, Divider } from "../../../components";
 import { Link } from "react-router-dom";
 import useFetchAPI from "../../../hooks/useFetchAPI";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const PostsSidebar = () => {
   const { data: posts, loading, error } = useFetchAPI(PostAPI.getPopular, [5]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="w-3/12">
+        <Skeleton count={5} height={60} width="100%" className="mb-2" />
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
 
   return (
@@ -17,7 +24,7 @@ const PostsSidebar = () => {
         <div className="flex flex-col gap-2">
           {posts.length > 0 ? (
             posts.map((post) => (
-              <div>
+              <div key={post.id}>
                 <Link to={`/posts/${post.slug}`}>
                   <PostItem
                     key={post.id}
@@ -31,7 +38,7 @@ const PostsSidebar = () => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-sm">Không có bài viết nào.</p>
+            <p className="text-gray-500 text-sm"></p>
           )}
         </div>
       </div>

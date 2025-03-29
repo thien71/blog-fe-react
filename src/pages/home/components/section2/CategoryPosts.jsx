@@ -2,19 +2,8 @@ import { Link } from "react-router-dom";
 import { Divider } from "../../../../components";
 import { PostItem } from "../../../../components/index";
 import { GoDotFill } from "react-icons/go";
-import useFetchAPI from "../../../../hooks/useFetchAPI";
-import PostAPI from "../../../../apis/endpoints/posts";
 
-const CategoryPosts = () => {
-  const {
-    data: categories,
-    loading,
-    error,
-  } = useFetchAPI(PostAPI.getRandomByCategory, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+const CategoryPosts = ({ data: categories }) => {
   return (
     <div className="w-3/5 pl-8 border-l border-gray-300">
       {categories.map((category, index) => (

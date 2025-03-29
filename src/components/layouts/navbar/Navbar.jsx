@@ -8,7 +8,7 @@ const Navbar = ({ className }) => {
   const { categories, loading, error } = useCategory();
   const navigate = useNavigate();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>Error: {error}</p>;
 
   const handleSearch = () => {

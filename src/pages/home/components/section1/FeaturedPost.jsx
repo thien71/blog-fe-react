@@ -1,14 +1,7 @@
-import PostAPI from "../../../../apis/endpoints/posts";
 import { PostItem } from "../../../../components/index";
 import { Link } from "react-router-dom";
-import useFetchAPI from "../../../../hooks/useFetchAPI";
 
-const FeaturedPost = () => {
-  const { data: post, loading, error } = useFetchAPI(PostAPI.getLatest);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+const FeaturedPost = ({ data: post }) => {
   return (
     <article className="cursor-pointer text-xl">
       {post.length > 0 ? (

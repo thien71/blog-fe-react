@@ -7,7 +7,7 @@ const TagContext = createContext();
 export function TagProvider({ children }) {
   const { data: tags, loading, error } = useFetchAPI(TagAPI.getAll);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>Error: {error}</p>;
 
   const value = {

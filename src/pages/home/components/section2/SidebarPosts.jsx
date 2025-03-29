@@ -1,15 +1,8 @@
-import PostAPI from "../../../../apis/endpoints/posts";
 import { Link } from "react-router-dom";
 import { Divider } from "../../../../components";
 import { PostItem } from "../../../../components/index";
-import useFetchAPI from "../../../../hooks/useFetchAPI";
 
-const SidebarPosts = () => {
-  const { data: posts, loading, error } = useFetchAPI(PostAPI.getRandom);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+const SidebarPosts = ({ data: posts }) => {
   return (
     <aside className="w-2/5 max-w-md">
       {posts.map((post) => (

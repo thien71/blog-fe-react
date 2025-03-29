@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import PostAPI from "../../../apis/endpoints/posts";
 import { Link } from "react-router-dom";
-import { FaHandPointRight } from "react-icons/fa";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const PostsList = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const fetchPosts = async () => {
+      setLoading(true);
       try {
         const response = await PostAPI.getAll();
         if (response.data.data?.length) {
@@ -15,9 +18,16 @@ const PostsList = () => {
         }
       } catch (error) {
         console.error("Lỗi khi tải bài viết", error);
+      } finally {
+        setLoading(false);
       }
-    })();
+    };
+    fetchPosts();
   }, []);
+
+  if (loading) {
+    return <Skeleton count={10} className="mb-4" height={40} />;
+  }
 
   return (
     <div className="flex flex-col items-start gap-4 py-4">

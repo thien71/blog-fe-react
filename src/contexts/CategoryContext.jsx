@@ -7,7 +7,7 @@ const CategoryContext = createContext();
 export function CategoryProvider({ children }) {
   const { data: categories, loading, error } = useFetchAPI(CategoryAPI.getAll);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>Error: {error}</p>;
 
   const value = {

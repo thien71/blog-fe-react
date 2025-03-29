@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import PostAPI from "../../apis/endpoints/posts";
 import PostItem from "./components/PostItem";
 import {
@@ -41,7 +43,7 @@ const PostDetailPage = () => {
     fetchPost();
   }, [slug]);
 
-  if (loading) return <p className="text-center text-gray-600">Đang tải...</p>;
+  if (loading) return <Skeleton height={1000} width="780px" />;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (

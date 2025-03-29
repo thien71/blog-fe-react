@@ -6,7 +6,7 @@ import { SocialLinks } from "../../shared";
 const Footer = ({ className }) => {
   const { categories, loading, error } = useCategory();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>Error: {error}</p>;
 
   const columns = [[], [], []];
