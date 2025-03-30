@@ -22,7 +22,7 @@ const Section1 = () => {
   const isLoading = loadingFeatured || loadingTopViewed;
 
   return (
-    <section className="w-4/5">
+    <section className="w-full xl:w-4/5">
       {loadingFeatured ? (
         <Skeleton height={200} />
       ) : errorFeatured ? (

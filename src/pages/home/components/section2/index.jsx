@@ -10,18 +10,18 @@ const Section2 = () => {
     data: sidebarPosts,
     loading: loadingSidebar,
     error: errorSidebar,
-  } = useFetchAPI(PostAPI.getRandom);
+  } = useFetchAPI(PostAPI.getRandom, [10]);
 
   const {
     data: categories,
     loading: loadingCategories,
     error: errorCategories,
-  } = useFetchAPI(PostAPI.getRandomByCategory, []);
+  } = useFetchAPI(PostAPI.getRandomByCategory, [6]);
 
   return (
-    <section className="flex gap-x-8">
+    <section className="flex flex-col xl:flex-row gap-x-8 ">
       {loadingSidebar ? (
-        <div className="w-2/5">
+        <div className="w-full xl:w-2/5">
           <Skeleton width="100%" count={10} height={140} className="mb-1" />
         </div>
       ) : errorSidebar ? (
@@ -31,7 +31,7 @@ const Section2 = () => {
       )}
 
       {loadingCategories ? (
-        <div className="w-3/5">
+        <div className="w-full xl:w-3/5">
           <Skeleton height={200} width="100%" count={5} className="mb-2" />
         </div>
       ) : errorCategories ? (
@@ -41,12 +41,6 @@ const Section2 = () => {
       )}
     </section>
   );
-  // return (
-  //   <section className="flex gap-x-8">
-  //     <SidebarPosts data />
-  //     <CategoryPosts />
-  //   </section>
-  // );
 };
 
 export default Section2;
